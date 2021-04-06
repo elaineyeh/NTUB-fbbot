@@ -257,6 +257,65 @@ async def echo(request: Request):
                             json=data
                         )
                         print(response.content)
-                        return "Success", 200
+                        # return "Success", 200
 
-        return messaging_text, 200
+                    data = {
+                            "recipient": {
+                                "id": sender_id
+                            },
+                            "messaging_type": "RESPONSE",
+                            "message": {
+                                "text": "歡迎使用 UB 醬，下方有快速按鈕以及選單可以選擇",
+                                "quick_replies": [
+                                    {
+                                        "content_type": "text",
+                                        "title": "北商學生端首頁",
+                                        "payload": "NTUB_STU_SITE",
+                                    }, {
+                                        "content_type": "text",
+                                        "title": "各式表單申請",
+                                        "payload": "NTUB_FORM_SITE",
+                                    }
+                                ]
+                            }
+                        }
+
+                    response = requests.post(
+                        'https://graph.facebook.com/v10.0/me/messages',
+                        headers=headers,
+                        params=params,
+                        json=data
+                    )
+                    print(response.content)
+                    return "Success", 200
+
+                data = {
+                    "recipient": {
+                        "id": sender_id
+                    },
+                    "messaging_type": "RESPONSE",
+                    "message": {
+                        "text": "歡迎使用 UB 醬，下方有快速按鈕以及選單可以選擇",
+                        "quick_replies": [
+                            {
+                                "content_type": "text",
+                                "title": "北商學生端首頁",
+                                "payload": "NTUB_STU_SITE",
+                            }, {
+                                "content_type": "text",
+                                "title": "各式表單申請",
+                                "payload": "NTUB_FORM_SITE",
+                            }
+                        ]
+                    }
+                }
+                response = requests.post(
+                    'https://graph.facebook.com/v10.0/me/messages',
+                    headers=headers,
+                    params=params,
+                    json=data
+                )
+                print(response.content)
+                return "Success", 200
+
+        # return messaging_text, 200
