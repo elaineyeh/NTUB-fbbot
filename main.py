@@ -33,25 +33,88 @@ async def echo(request: Request):
                 sender_id = messaging_event['sender']['id']
                 # recipient_id = messaging_event['recipient']['id']
 
+                headers = {
+                    'Content-Type': 'application/json',
+                }
+                params = (
+                    ('access_token', PAGE_ACCESS_TOKEN),
+                )
+
                 if messaging_event.get('message'):
                     # Extracting text message
-                    if 'text' in messaging_event['message']:
+                    if messaging_event['message'].get('quick_reply'):
+                        if messaging_event['message']['quick_reply']['payload'] == "NTUB_STU_SITE":
+                            data = {
+                                "recipient": {
+                                    "id": sender_id
+                                },
+                                "message": {
+                                    "attachment": {
+                                        "type": "template",
+                                        "payload": {
+                                            "template_type": "button",
+                                            "text": "學生端官網",
+                                            "buttons": [
+                                                {
+                                                    "type": "web_url",
+                                                    "url": "https://stud.ntub.edu.tw/p/412-1007-459.php?Lang=zh-tw",
+                                                    "title": "點此進入北商學生端官網"
+                                                },
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+
+                            response = requests.post(
+                                'https://graph.facebook.com/v2.6/me/messages',
+                                headers=headers,
+                                params=params,
+                                json=data
+                            )
+                            print(response.content)
+                        elif messaging_event['message']['quick_reply']['payload'] == "NTUB_FORM_SITE":
+                            data = {
+                                "recipient": {
+                                    "id": sender_id
+                                },
+                                "message": {
+                                    "attachment": {
+                                        "type": "template",
+                                        "payload": {
+                                            "template_type": "button",
+                                            "text": "各式申請表單",
+                                            "buttons": [
+                                                {
+                                                    "type": "web_url",
+                                                    "url": "https://stud.ntub.edu.tw/p/412-1007-459.php?Lang=zh-tw",
+                                                    "title": "點此進入北商表單官網"
+                                                },
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+
+                            response = requests.post(
+                                'https://graph.facebook.com/v2.6/me/messages',
+                                headers=headers,
+                                params=params,
+                                json=data
+                            )
+                            print(response.content)
+                    elif 'text' in messaging_event['message']:
                         messaging_text = messaging_event['message']['text']
+
+                        response = messaging_text
+                        bot.send_text_message(sender_id, response)
                     else:
                         messaging_text = 'no text'
 
-                    # Echo
-                    response = messaging_text
-                    bot.send_text_message(sender_id, response)
+                        response = messaging_text
+                        bot.send_text_message(sender_id, response)
 
-                elif messaging_event.get('postback'):
-                    headers = {
-                        'Content-Type': 'application/json',
-                    }
-                    params = (
-                        ('access_token', PAGE_ACCESS_TOKEN),
-                    )
-
+                if messaging_event.get('postback'):
                     if messaging_event['postback']['title'] == 'Get Started':
                         data = {
                             "psid": sender_id,
