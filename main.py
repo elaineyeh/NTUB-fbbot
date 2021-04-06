@@ -159,7 +159,7 @@ async def echo(request: Request):
                             "greeting": [
                                 {
                                   "locale": "default",
-                                  "text": "Hello {{user_first_name}}!"
+                                  "text": "Hello {{user_first_name}}! 我是 UB醬，很高興為您服務 !"
                                 }
                             ]
                         }
@@ -226,7 +226,7 @@ async def echo(request: Request):
                             json=data
                         )
                         print(response.content)
-                        return "Success", 200
+                        # return "Success", 200
                     elif messaging_event['postback']['payload'] == 'NTUB_ACTIVITY':
                         data = {
                             "recipient": {
