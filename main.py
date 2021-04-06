@@ -45,13 +45,14 @@ async def echo(request: Request):
                     bot.send_text_message(sender_id, response)
 
                 elif messaging_event.get('postback'):
+                    headers = {
+                        'Content-Type': 'application/json',
+                    }
+                    params = (
+                        ('access_token', PAGE_ACCESS_TOKEN),
+                    )
+
                     if messaging_event['postback']['title'] == 'Get Started':
-                        headers = {
-                            'Content-Type': 'application/json',
-                        }
-                        params = (
-                            ('access_token', PAGE_ACCESS_TOKEN),
-                        )
                         data = {
                             "psid": sender_id,
                             "persistent_menu": [
@@ -89,5 +90,110 @@ async def echo(request: Request):
                             json=data
                         )
                         print(response.content)
+
+                        data = {
+                            "psid": sender_id,
+                            "greeting": [
+                                {
+                                  "locale": "default",
+                                  "text": "Hello {{user_first_name}}!"
+                                }
+                            ]
+                        }
+
+                        response = requests.post(
+                            'https://graph.facebook.com/v10.0/me/messenger_profile',
+                            headers=headers,
+                            params=params,
+                            json=data
+                        )
+                        print(response.content)
+
+                        data = {
+                            "ice_breakers": [
+                                {
+                                   "question": "如何進入學校官網？",
+                                   "payload": "NTUB_WEB_SITE"
+                                },
+                                {
+                                   "question": "最近學校有舉辦什麼活動？",
+                                   "payload": "NTUB_ACTIVITY"
+                                },
+                            ]
+                        }
+
+                        response = requests.post(
+                            'https://graph.facebook.com/v10.0/me/messenger_profile',
+                            headers=headers,
+                            params=params,
+                            json=data
+                        )
+                        print(response.content)
+
+                        # return "Success", 200
                         return "Success", 200
-    return messaging_text, 200
+
+                    if messaging_event['postback']['payload'] == 'NTUB_WEB_SITE':
+                        data = {
+                            "recipient": {
+                                "id": sender_id
+                            },
+                            "message": {
+                                "attachment": {
+                                    "type": "template",
+                                    "payload": {
+                                        "template_type": "button",
+                                        "text": "國立臺北商業大學",
+                                        "buttons": [
+                                            {
+                                                "type": "web_url",
+                                                "url": "https://www.ntub.edu.tw",
+                                                "title": "點此進入北商官網"
+                                            },
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+
+                        response = requests.post(
+                            'https://graph.facebook.com/v2.6/me/messages',
+                            headers=headers,
+                            params=params,
+                            json=data
+                        )
+                        print(response.content)
+                        return "Success", 200
+                    elif messaging_event['postback']['payload'] == 'NTUB_ACTIVITY':
+                        data = {
+                            "recipient": {
+                                "id": sender_id
+                            },
+                            "message": {
+                                "attachment": {
+                                    "type": "template",
+                                    "payload": {
+                                        "template_type": "button",
+                                        "text": "活動報名系統",
+                                        "buttons": [
+                                            {
+                                                "type": "web_url",
+                                                "url": "https://signupactivity.ntub.edu.tw/activity/main",
+                                                "title": "點此進入北商大活動報名系統"
+                                            },
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+
+                        response = requests.post(
+                            'https://graph.facebook.com/v2.6/me/messages',
+                            headers=headers,
+                            params=params,
+                            json=data
+                        )
+                        print(response.content)
+                        return "Success", 200
+
+        return messaging_text, 200
