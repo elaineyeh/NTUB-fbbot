@@ -71,26 +71,276 @@ async def echo(request: Request):
                                         "type": "template",
                                         "payload": {
                                             "template_type": "button",
-                                            "text": "各式申請表單",
+                                            "text": "各式表單",
                                             "buttons": [
                                                 {
                                                     "type": "web_url",
                                                     "url": "https://stud.ntub.edu.tw/p/412-1007-459.php?Lang=zh-tw",
-                                                    "title": "點此進入北商表單官網"
+                                                    "title": "點此進入北商大表單官網"
                                                 },
                                             ]
                                         }
                                     }
                                 }
                             }
+                        elif messaging_event['message']['quick_reply']['payload'] == "NTUB_CALENDAR":
+                            data = {
+                                "recipient": {
+                                    "id": sender_id
+                                },
+                                "message": {
+                                    "attachment": {
+                                        "type": "template",
+                                        "payload": {
+                                            "template_type": "button",
+                                            "text": "109 學年度行事曆",
+                                            "buttons": [
+                                                {
+                                                    "type": "web_url",
+                                                    "url": "https://acad.ntub.edu.tw/var/file/4/1004/img/392145602.pdf",
+                                                    "title": "點此查看 109 學年度行事曆"
+                                                },
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        elif messaging_event['message']['quick_reply']['payload'] == "CALENDAR_103":
+                            data = {
+                                "recipient": {
+                                    "id": sender_id
+                                },
+                                "message": {
+                                    "attachment": {
+                                        "type": "template",
+                                        "payload": {
+                                            "template_type": "button",
+                                            "text": "103 學年度行事曆",
+                                            "buttons": [
+                                                {
+                                                    "type": "web_url",
+                                                    "url": "https://acad.ntub.edu.tw/var/file/4/1004/img/1022/103-schedule.pdf",
+                                                    "title": "點此查看103 學年度行事曆"
+                                                },
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        elif messaging_event['message']['quick_reply']['payload'] == "CALENDAR_104":
+                            data = {
+                                "recipient": {
+                                    "id": sender_id
+                                },
+                                "message": {
+                                    "attachment": {
+                                        "type": "template",
+                                        "payload": {
+                                            "template_type": "button",
+                                            "text": "104 學年度行事曆",
+                                            "buttons": [
+                                                {
+                                                    "type": "web_url",
+                                                    "url": "https://acad.ntub.edu.tw/var/file/4/1004/img/1022/142701551.pdf",
+                                                    "title": "點此查看104 學年度行事曆"
+                                                },
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        elif messaging_event['message']['quick_reply']['payload'] == "CALENDAR_105":
+                            data = {
+                                "recipient": {
+                                    "id": sender_id
+                                },
+                                "message": {
+                                    "attachment": {
+                                        "type": "template",
+                                        "payload": {
+                                            "template_type": "button",
+                                            "text": "105 學年度行事曆",
+                                            "buttons": [
+                                                {
+                                                    "type": "web_url",
+                                                    "url": "https://acad.ntub.edu.tw/var/file/4/1004/img/1022/151074443.pdf",
+                                                    "title": "點此查看105 學年度行事曆"
+                                                },
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        elif messaging_event['message']['quick_reply']['payload'] == "CALENDAR_106":
+                            data = {
+                                "recipient": {
+                                    "id": sender_id
+                                },
+                                "message": {
+                                    "attachment": {
+                                        "type": "template",
+                                        "payload": {
+                                            "template_type": "button",
+                                            "text": "106 學年度行事曆",
+                                            "buttons": [
+                                                {
+                                                    "type": "web_url",
+                                                    "url": "https://acad.ntub.edu.tw/var/file/4/1004/img/394/169062160.pdf",
+                                                    "title": "點此查看106 學年度行事曆"
+                                                },
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        elif messaging_event['message']['quick_reply']['payload'] == "CALENDAR_107":
+                            data = {
+                                "recipient": {
+                                    "id": sender_id
+                                },
+                                "message": {
+                                    "attachment": {
+                                        "type": "template",
+                                        "payload": {
+                                            "template_type": "button",
+                                            "text": "107 學年度行事曆",
+                                            "buttons": [
+                                                {
+                                                    "type": "web_url",
+                                                    "url": "https://acad.ntub.edu.tw/var/file/4/1004/img/394/183391456.pdf",
+                                                    "title": "點此查看107 學年度行事曆"
+                                                },
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        elif messaging_event['message']['quick_reply']['payload'] == "CALENDAR_108":
+                            data = {
+                                "recipient": {
+                                    "id": sender_id
+                                },
+                                "message": {
+                                    "attachment": {
+                                        "type": "template",
+                                        "payload": {
+                                            "template_type": "button",
+                                            "text": "108 學年度行事曆",
+                                            "buttons": [
+                                                {
+                                                    "type": "web_url",
+                                                    "url": "https://acad.ntub.edu.tw/var/file/4/1004/img/451462435.pdf",
+                                                    "title": "點此查看108 學年度行事曆"
+                                                },
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        elif messaging_event['message']['quick_reply']['payload'] == "CALENDAR_109":
+                            data = {
+                                "recipient": {
+                                    "id": sender_id
+                                },
+                                "message": {
+                                    "attachment": {
+                                        "type": "template",
+                                        "payload": {
+                                            "template_type": "button",
+                                            "text": "109 學年度行事曆",
+                                            "buttons": [
+                                                {
+                                                    "type": "web_url",
+                                                    "url": "https://acad.ntub.edu.tw/var/file/4/1004/img/392145602.pdf",
+                                                    "title": "點此查看109 學年度行事曆"
+                                                },
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        elif messaging_event['message']['quick_reply']['payload'] == "CALENDAR_110":
+                            data = {
+                                "recipient": {
+                                    "id": sender_id
+                                },
+                                "message": {
+                                    "attachment": {
+                                        "type": "template",
+                                        "payload": {
+                                            "template_type": "button",
+                                            "text": "110 學年度行事曆",
+                                            "buttons": [
+                                                {
+                                                    "type": "web_url",
+                                                    "url": "https://acad.ntub.edu.tw/var/file/4/1004/img/800579906.pdf",
+                                                    "title": "點此查看110 學年度行事曆"
+                                                },
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        response = requests.post(
+                            'https://graph.facebook.com/v2.6/me/messages',
+                            headers=headers,
+                            params=params,
+                            json=data
+                        )
+                        print(response.content)
+                    elif messaging_event['message']['text'] == '查詢歷年行事曆':
+                        data = {
+                            "recipient": {
+                                "id": sender_id
+                            },
+                            "messaging_type": "RESPONSE",
+                            "message": {
+                                "text": "查詢年度",
+                                "quick_replies": [
+                                    {
+                                        "content_type": "text",
+                                        "title": "103 學年度",
+                                        "payload": "CALENDAR_103",
+                                    }, {
+                                        "content_type": "text",
+                                        "title": "104 學年度",
+                                        "payload": "CALENDAR_104",
+                                    }, {
+                                        "content_type": "text",
+                                        "title": "105 學年度",
+                                        "payload": "CALENDAR_105",
+                                    }, {
+                                        "content_type": "text",
+                                        "title": "106 學年度",
+                                        "payload": "CALENDAR_106",
+                                    }, {
+                                        "content_type": "text",
+                                        "title": "107 學年度",
+                                        "payload": "CALENDAR_107",
+                                    }, {
+                                        "content_type": "text",
+                                        "title": "108 學年度",
+                                        "payload": "CALENDAR_108",
+                                    }, {
+                                        "content_type": "text",
+                                        "title": "109 學年度",
+                                        "payload": "CALENDAR_109",
+                                    }, {
+                                        "content_type": "text",
+                                        "title": "110 學年度",
+                                        "payload": "CALENDAR_110",
+                                    }
+                                ]
+                            }
+                        }
 
-                            response = requests.post(
-                                'https://graph.facebook.com/v2.6/me/messages',
-                                headers=headers,
-                                params=params,
-                                json=data
-                            )
-                            print(response.content)
+                        response = requests.post(
+                            'https://graph.facebook.com/me/messages',
+                            headers=headers,
+                            params=params,
+                            json=data
+                        )
+                        print(response.content)
                     elif 'text' in messaging_event['message']:
                         messaging_text = messaging_event['message']['text']
 
@@ -195,26 +445,26 @@ async def echo(request: Request):
                         )
                         print(response.content)
 
-                        data = {
-                            "ice_breakers": [
-                                {
-                                   "question": "如何進入學校官網？",
-                                   "payload": "NTUB_WEB_SITE"
-                                },
-                                {
-                                   "question": "最近學校有舉辦什麼活動？",
-                                   "payload": "NTUB_ACTIVITY"
-                                },
-                            ]
-                        }
+                        # data = {
+                        #     "ice_breakers": [
+                        #         {
+                        #            "question": "如何進入學校官網？",
+                        #            "payload": "NTUB_WEB_SITE"
+                        #         },
+                        #         {
+                        #            "question": "最近學校有舉辦什麼活動？",
+                        #            "payload": "NTUB_ACTIVITY"
+                        #         },
+                        #     ]
+                        # }
 
-                        response = requests.post(
-                            'https://graph.facebook.com/v10.0/me/messenger_profile',
-                            headers=headers,
-                            params=params,
-                            json=data
-                        )
-                        print(response.content)
+                        # response = requests.post(
+                        #     'https://graph.facebook.com/v10.0/me/messenger_profile',
+                        #     headers=headers,
+                        #     params=params,
+                        #     json=data
+                        # )
+                        # print(response.content)
 
                         # return "Success", 200
                         return "Success", 200
@@ -250,6 +500,38 @@ async def echo(request: Request):
                         )
                         print(response.content)
                         # return "Success", 200
+                    elif messaging_event['postback']['payload'] == 'QUICK_REPLY':
+                        data = {
+                            "recipient": {
+                                "id": sender_id
+                            },
+                            "messaging_type": "RESPONSE",
+                            "message": {
+                                "text": "歡迎使用 UB 醬，下方有快速按鈕以及選單可以選擇",
+                                "quick_replies": [
+                                    {
+                                        "content_type": "text",
+                                        "title": "學生資訊系統",
+                                        "payload": "NTUB_STU_SITE",
+                                    }, {
+                                        "content_type": "text",
+                                        "title": "各式表單申請",
+                                        "payload": "NTUB_FORM_SITE",
+                                    }, {
+                                        "content_type": "text",
+                                        "title": "109 學年度行事曆",
+                                        "payload": "NTUB_CALENDAR",
+                                    }
+                                ]
+                            }
+                        }
+                        response = requests.post(
+                            'https://graph.facebook.com/v10.0/me/messages',
+                            headers=headers,
+                            params=params,
+                            json=data
+                        )
+                        print(response.content)
                     elif messaging_event['postback']['payload'] == 'NTUB_ACTIVITY':
                         data = {
                             "recipient": {
