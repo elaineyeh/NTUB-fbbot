@@ -28,11 +28,8 @@ async def echo(request: Request):
     if data['object'] == 'page':
         for entry in data['entry']:
             for messaging_event in entry['messaging']:
-
-                # IDs
                 sender_id = messaging_event['sender']['id']
                 # recipient_id = messaging_event['recipient']['id']
-
                 headers = {
                     'Content-Type': 'application/json',
                 }
@@ -41,7 +38,6 @@ async def echo(request: Request):
                 )
 
                 if messaging_event.get('message'):
-                    # Extracting text message
                     if messaging_event['message'].get('quick_reply'):
                         if messaging_event['message']['quick_reply']['payload'] == "NTUB_STU_SITE":
                             data = {
@@ -53,26 +49,18 @@ async def echo(request: Request):
                                         "type": "template",
                                         "payload": {
                                             "template_type": "button",
-                                            "text": "學生端官網",
+                                            "text": "學生資訊系統",
                                             "buttons": [
                                                 {
                                                     "type": "web_url",
-                                                    "url": "https://stud.ntub.edu.tw/p/412-1007-459.php?Lang=zh-tw",
-                                                    "title": "點此進入北商學生端官網"
+                                                    "url": "http://ntcbadm1.ntub.edu.tw/",
+                                                    "title": "點此進入學生資訊系統"
                                                 },
                                             ]
                                         }
                                     }
                                 }
                             }
-
-                            response = requests.post(
-                                'https://graph.facebook.com/v2.6/me/messages',
-                                headers=headers,
-                                params=params,
-                                json=data
-                            )
-                            print(response.content)
                         elif messaging_event['message']['quick_reply']['payload'] == "NTUB_FORM_SITE":
                             data = {
                                 "recipient": {
@@ -124,8 +112,13 @@ async def echo(request: Request):
                                     "composer_input_disabled": False,
                                     "call_to_actions": [
                                         {
+                                            "type": "postback",
+                                            "title": "顯示快捷按鈕",
+                                            "payload": "QUICK_REPLY"
+                                        },
+                                        {
                                             "type": "web_url",
-                                            "title": "NTUB",
+                                            "title": "國立臺北商業大學",
                                             "url": "www.ntub.edu.tw",
                                             "webview_height_ratio": "full"
                                         },
@@ -139,6 +132,36 @@ async def echo(request: Request):
                                             "type": "web_url",
                                             "title": "Blackboard",
                                             "url": "https://bb.ntub.edu.tw",
+                                            "webview_height_ratio": "full"
+                                        },
+                                        {
+                                            "type": "web_url",
+                                            "title": "北商大圖書館",
+                                            "url": "http://library.ntub.edu.tw/mp.asp?mp=1",
+                                            "webview_height_ratio": "full"
+                                        },
+                                        {
+                                            "type": "web_url",
+                                            "title": "北商大活動報名系統",
+                                            "url": "https://signupactivity.ntub.edu.tw/activity/main",
+                                            "webview_height_ratio": "full"
+                                        },
+                                        {
+                                            "type": "web_url",
+                                            "title": "各式表單",
+                                            "url": "https://stud.ntub.edu.tw/p/412-1007-459.php?Lang=zh-tw",
+                                            "webview_height_ratio": "full"
+                                        },
+                                        {
+                                            "type": "web_url",
+                                            "title": "臺銀學雜費入口",
+                                            "url": "https://school.bot.com.tw/newTwbank/index.aspx",
+                                            "webview_height_ratio": "full"
+                                        },
+                                        {
+                                            "type": "web_url",
+                                            "title": "心靈諮商室諮詢",
+                                            "url": "https://counseling.ntub.edu.tw/cs_ntub/apps/cs/ntub/index.aspx",
                                             "webview_height_ratio": "full"
                                         }
                                     ]
@@ -258,34 +281,6 @@ async def echo(request: Request):
                         )
                         print(response.content)
                         # return "Success", 200
-
-                data = {
-                    "recipient": {
-                        "id": sender_id
-                    },
-                    "messaging_type": "RESPONSE",
-                    "message": {
-                        "text": "歡迎使用 UB 醬，下方有快速按鈕以及選單可以選擇",
-                        "quick_replies": [
-                            {
-                                "content_type": "text",
-                                "title": "北商學生端首頁",
-                                "payload": "NTUB_STU_SITE",
-                            }, {
-                                "content_type": "text",
-                                "title": "各式表單申請",
-                                "payload": "NTUB_FORM_SITE",
-                            }
-                        ]
-                    }
-                }
-                response = requests.post(
-                    'https://graph.facebook.com/v10.0/me/messages',
-                    headers=headers,
-                    params=params,
-                    json=data
-                )
-                print(response.content)
                 return "Success", 200
 
         # return messaging_text, 200
