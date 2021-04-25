@@ -274,10 +274,31 @@ async def echo(request: Request):
                         )
                         print(response.content)
                     elif 'text' in messaging_event['message']:
-                        messaging_text = messaging_event['message']['text']
+                        if sender_id in flag:
+                            if flag[sender_id] == 1:
+                                feedback = messaging_event['message']['text']
 
-                        response = messaging_text
-                        bot.send_text_message(sender_id, response)
+                                message = MessageSchema(
+                                    subject="UB 醬意見回饋",
+                                    recipients=Settings().RECEPI_EMAIL,
+                                    body=feedback,
+                                    subtype="html"
+                                )
+
+                                fm = FastMail(conf)
+                                await fm.send_message(message)
+                                text = "謝謝您留下寶貴的意見，我們將盡快處理"
+                                bot.send_text_message(sender_id, text)
+                                flag[sender_id] = 0
+                                print(flag[sender_id])
+                            else:
+                                messaging_text = messaging_event['message']['text']
+                                response = messaging_text
+                                bot.send_text_message(sender_id, response)
+                        else:
+                            messaging_text = messaging_event['message']['text']
+                            response = messaging_text
+                            bot.send_text_message(sender_id, response)
                     else:
                         messaging_text = 'no text'
 
@@ -502,6 +523,13 @@ async def echo(request: Request):
                         )
                         print(response.content)
                         # return "Success", 200
+                    elif messaging_event['postback']['payload'] == 'FEEDBACK':
+                        flag[sender_id] = 1
+
+                        response = "感謝您的使用，如有遇到任何使用上的問題，請在下方寫下您寶貴的意見"
+                        bot.send_text_message(sender_id, response)
+                        print(flag[sender_id])
+
                 return "Success", 200
 
         # return messaging_text, 200
