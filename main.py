@@ -345,6 +345,10 @@ async def echo(request: Request):
                                             "title": "心靈諮商室諮詢",
                                             "url": "https://counseling.ntub.edu.tw/cs_ntub/apps/cs/ntub/index.aspx",
                                             "webview_height_ratio": "full"
+                                        }, {
+                                            "type": "postback",
+                                            "title": "意見回饋",
+                                            "payload": "FEEDBACK"
                                         }
                                     ]
                                 }
