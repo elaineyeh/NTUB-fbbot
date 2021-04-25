@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from pymessenger import Bot
 import requests
 
@@ -9,6 +10,18 @@ app = FastAPI()
 PAGE_ACCESS_TOKEN = Settings().PAGE_ACCESS_TOKEN
 
 bot = Bot(PAGE_ACCESS_TOKEN)
+
+flag = {}
+conf = ConnectionConfig(
+    MAIL_USERNAME=Settings().MAIL_USERNAME,
+    MAIL_PASSWORD=Settings().MAIL_PASSWORD,
+    MAIL_FROM=Settings().MAIL_FROM,
+    MAIL_PORT=Settings().MAIL_PORT,
+    MAIL_SERVER=Settings().MAIL_SERVER,
+    MAIL_TLS=Settings().MAIL_TLS,
+    MAIL_SSL=Settings().MAIL_SSL,
+    USE_CREDENTIALS=Settings().USE_CREDENTIALS
+)
 
 
 @app.get("/")
