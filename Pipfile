@@ -10,6 +10,7 @@ fastapi = "*"
 uvicorn = "*"
 pymessenger = "*"
 requests = "*"
+fastapi-mail = "*"
 
 [requires]
 python_version = "3.8"
