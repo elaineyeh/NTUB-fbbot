@@ -11,6 +11,9 @@ uvicorn = "*"
 pymessenger = "*"
 requests = "*"
 fastapi-mail = "*"
+sqlalchemy = "*"
+psycopg2-binary = "*"
+ipython = "*"
 
 [requires]
 python_version = "3.8"
