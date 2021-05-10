@@ -26,6 +26,8 @@ class FastLink(Base):
     __tablename__ = "ub_fastlink"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
+    discription = Column(String)
+    button_label = Column(String)
     url = Column(String)
 
 
@@ -39,9 +41,11 @@ class State(Base):
     __tablename__ = "ub_state"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
+    label = Column(String)
     function = Column(String)
     is_input = Column(Boolean, default=False)
     parent_id = Column(ForeignKey('ub_state.id', ondelete='CASCADE', onupdate='SET NULL'))
+
 
 '''
 # Create
@@ -59,7 +63,7 @@ s.commit()
 class User(Base):
     __tablename__ = "ub_user"
     id = Column(Integer, primary_key=True, index=True)
-    fb_id = Column(Integer)
+    fb_id = Column(String)
     google_token = Column(String)
     subscribe = Column(Boolean, default=False)
     activity_category_id = Column(ForeignKey('ub_activitycategory.id', ondelete='SET NULL', onupdate='SET NULL'))
