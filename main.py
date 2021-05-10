@@ -518,6 +518,7 @@ async def echo(request: Request):
                         bot.send_text_message(sender_id, response)
 
                 if messaging_event.get('postback'):
+                    # Initialize
                     if messaging_event['postback']['title'] == 'Get Started':
                         data = {
                             "psid": sender_id,
@@ -600,8 +601,8 @@ async def echo(request: Request):
                             "psid": sender_id,
                             "greeting": [
                                 {
-                                  "locale": "default",
-                                  "text": "Hello {{user_first_name}}! 我是 UB醬，很高興為您服務 !"
+                                    "locale": "default",
+                                    "text": "Hello {{user_first_name}}! 我是 UB醬，很高興為您服務 !"
                                 }
                             ]
                         }
@@ -617,12 +618,12 @@ async def echo(request: Request):
                         data = {
                             "ice_breakers": [
                                 {
-                                   "question": "如何進入學校官網？",
-                                   "payload": "NTUB_WEB_SITE"
+                                    "question": "如何進入學校官網？",
+                                    "payload": "NTUB_WEB_SITE"
                                 },
                                 {
-                                   "question": "最近學校有舉辦什麼活動？",
-                                   "payload": "NTUB_ACTIVITY"
+                                    "question": "最近學校有舉辦什麼活動？",
+                                    "payload": "NTUB_ACTIVITY"
                                 },
                             ]
                         }
