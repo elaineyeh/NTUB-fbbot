@@ -16,14 +16,14 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 
-class ActivityCategory(Base):
-    __tablename__ = "ub_activitycategory"
+class Role(Base):
+    __tablename__ = "ub_role"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
 
 
-class FastLink(Base):
-    __tablename__ = "ub_fastlink"
+class Link(Base):
+    __tablename__ = "ub_link"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     discription = Column(String)
@@ -64,9 +64,9 @@ class User(Base):
     __tablename__ = "ub_user"
     id = Column(Integer, primary_key=True, index=True)
     fb_id = Column(String)
-    google_token = Column(String)
-    subscribe = Column(Boolean, default=False)
-    activity_category_id = Column(ForeignKey('ub_activitycategory.id', ondelete='SET NULL', onupdate='SET NULL'))
+    token = Column(String)
+    subscribed = Column(Boolean, default=False)
+    role = Column(ForeignKey('ub_role.id', ondelete='SET NULL', onupdate='SET NULL'))
     state_id = Column(ForeignKey('ub_state.id', ondelete='SET NULL', onupdate='SET NULL'))
 
 
