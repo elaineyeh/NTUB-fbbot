@@ -2,6 +2,8 @@ from fastapi import FastAPI, Request
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from pymessenger import Bot
 import requests
+import orm
+from room_location import ntub_room_location
 
 from config import Settings
 
@@ -22,6 +24,9 @@ conf = ConnectionConfig(
     MAIL_SSL=Settings().MAIL_SSL,
     USE_CREDENTIALS=Settings().USE_CREDENTIALS
 )
+mapping = {
+    'NTUB_ROOM_LOCATION': ntub_room_location,
+}
 
 
 @app.get("/")
@@ -33,8 +38,215 @@ async def verify(request: Request):
         return int(request.query_params['hub.challenge'])
     return "Hello world", 200
 
+headers = {
+    'Content-Type': 'application/json',
+}
+params = (
+    ('access_token', PAGE_ACCESS_TOKEN),
+)
+
+
+def process_postback(messaging, postback):
+    # 1. user
+    # 2. state
+    # 3. get all sub states
+    # 4. compare postback in sub states
+    # 5. response
+    global headers, params
+    db = orm.SessionLocal()
+    user_fb_id = messaging['sender']['id']
+    user = db.query(orm.User).filter(
+        orm.User.fb_id == user_fb_id
+    ).one_or_none()
+    if user is None:
+        db_user = orm.User()
+        db_user.fb_id = user_fb_id
+        db.add(db_user)
+        db.commit()
+        user = db_user
+    sub_states = db.query(orm.State).filter(
+        orm.State.parent_id == user.state_id
+    ).all()
+    if not sub_states:
+        pass
+    sub_state_names = [
+        sub_state.name
+        for sub_state
+        in sub_states
+    ]
+    payload = postback['payload']
+    if payload in sub_state_names:
+        # Change user state to input state
+        state = db.query(orm.State).filter(
+            orm.State.name == payload
+        ).first()
+        user.state_id = state.id
+        db.add(user)
+        db.commit()
+        sub_states = db.query(orm.State).filter(
+            orm.State.parent_id == user.state_id
+        ).all()
+        # Find next states
+        data = {
+            "recipient": {
+                "id": user.fb_id
+            },
+            "messaging_type": "RESPONSE",
+            "message": {
+                "text": state.label,
+                "quick_replies": [
+                    {
+                        "content_type": "text",
+                                        "title": sub_state.label,
+                                        "payload": sub_state.name,
+                    }
+                    for sub_state in sub_states
+                ]
+            }
+        }
+        requests.post(
+            'https://graph.facebook.com/v10.0/me/messages',
+            headers=headers,
+            params=params,
+            json=data
+        )
+    db.close()
+
+
+def process_message(messaging, message):
+    # 1. user
+    # 2. state
+    # 3. get all sub states
+    # 4. compare message in sub states
+    # 5. response
+    global headers, params
+    db = orm.SessionLocal()
+    user_fb_id = messaging['sender']['id']
+    user = db.query(orm.User).filter(
+        orm.User.fb_id == user_fb_id
+    ).one_or_none()
+    if user is None:
+        db_user = orm.User()
+        db_user.fb_id = user_fb_id
+        db.add(db_user)
+        db.commit()
+        user = db_user
+    sub_states = db.query(orm.State).filter(
+        orm.State.parent_id == user.state_id
+    ).all()
+    if not sub_states:
+        pass
+    sub_state_names = [
+        sub_state.name
+        for sub_state
+        in sub_states
+    ]
+    # NTUB_ROOM_LOCATION
+    payload = message['quick_reply']['payload']
+    if payload in sub_state_names:
+        state = db.query(orm.State).filter(
+            orm.State.name == payload
+        ).first()
+        # Change user state to input state
+        user.state_id = state.id
+        db.add(user)
+        db.commit()
+        # Execute state function
+        if state.function:
+            function = mapping.get(state.function)
+            function(user.fb_id, headers, params)
+            return
+        # Find next states
+        sub_states = db.query(orm.State).filter(
+            orm.State.parent_id == user.state_id
+        ).all()
+        if sub_states:
+            data = {
+                "recipient": {
+                    "id": user.fb_id
+                },
+                "messaging_type": "RESPONSE",
+                "message": {
+                    "text": state.label,
+                    "quick_replies": [
+                        {
+                            "content_type": "text",
+                            "title": sub_state.label,
+                            "payload": sub_state.name,
+                        }
+                        for sub_state in sub_states
+                    ]
+                }
+            }
+            requests.post(
+                'https://graph.facebook.com/v10.0/me/messages',
+                headers=headers,
+                params=params,
+                json=data
+            )
+    db.close()
+
+
+def process_messaging(messaging):
+    if 'postback' in messaging:
+        process_postback(messaging, messaging['postback'])
+    if 'message' in messaging:
+        process_message(messaging, messaging['message'])
+
 
 @app.post("/")
+async def new(request: Request):
+    print(await request.json())
+    data = await request.json()
+    for entry in data['entry']:
+        for messaging in entry['messaging']:
+            process_messaging(messaging)
+    return "Success", 200
+    # is_postback = 'postback' in data['entry'][0]
+    '''
+    # postback
+    {
+        'object': 'page',
+        'entry': [
+            {'id': '112374620901935',
+             'time': 1620468150834,
+             'messaging': [
+                 {
+                     'sender': {'id': '3843687509051581'},
+                     'recipient': {'id': '112374620901935'},
+                     'timestamp': 1620468150655,
+                     'postback': {'title': '顯示快捷按鈕', 'payload': 'QUICK_REPLY'}
+                 }
+             ]
+             }
+        ]
+    }
+    '''
+    '''
+    text
+    {
+        'object': 'page',
+        'entry': [
+            {'id': '112374620901935',
+             'time': 1620468157945,
+             'messaging': [
+                 {'sender': {'id': '3843687509051581'},
+                  'recipient': {'id': '112374620901935'},
+                  'timestamp': 1620468157832,
+                  'message': {
+                     'mid': 'm_MeUVO9WfB3gaQ9NsQegMC9Y5gb9XBhcIq6OgbtUm9g6sp_zKkcQ0cAc-sssygb0_W02eu_SoTOlrTYQCD-8Khw',
+                     'text': '教室配置圖',
+                     'quick_reply': {'payload': 'NTUB_ROOM_LOCATION'}
+                 }
+                 }
+             ]
+             }
+        ]
+    }
+    '''
+
+
+@app.post("/old")
 async def echo(request: Request):
     print(await request.json())
     data = await request.json()
