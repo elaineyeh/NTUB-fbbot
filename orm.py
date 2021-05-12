@@ -66,7 +66,7 @@ class User(Base):
     fb_id = Column(String)
     token = Column(String)
     subscribed = Column(Boolean, default=False)
-    role = Column(ForeignKey('ub_role.id', ondelete='SET NULL', onupdate='SET NULL'))
+    role_id = Column(ForeignKey('ub_role.id', ondelete='SET NULL', onupdate='SET NULL'))
     state_id = Column(ForeignKey('ub_state.id', ondelete='SET NULL', onupdate='SET NULL'))
 
 
