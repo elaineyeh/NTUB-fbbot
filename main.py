@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from pymessenger import Bot
 from room_location import ntub_room_location
+from all_calendar import all_calendar
 from init_menu import init_menu
 from config import Settings
 import sqlalchemy
@@ -27,6 +28,7 @@ conf = ConnectionConfig(
 )
 mapping = {
     'NTUB_ROOM_LOCATION': ntub_room_location,
+    'ALL_CALENDAR': all_calendar
 }
 
 
@@ -198,7 +200,7 @@ def process_messaging(messaging):
         process_message(messaging, messaging['message'])
 
 
-@app.post("/new")
+@app.post("/")
 async def new(request: Request):
     print(await request.json())
     data = await request.json()
@@ -250,7 +252,7 @@ async def new(request: Request):
     '''
 
 
-@app.post("/")
+@app.post("/old")
 async def echo(request: Request):
     print(await request.json())
     data = await request.json()
@@ -439,58 +441,7 @@ async def echo(request: Request):
                         )
                         print(response.content)
                     elif 'text' in messaging_event['message'] and  messaging_event['message']['text'] == '查詢歷年行事曆':
-                        data = {
-                            "recipient": {
-                                "id": sender_id
-                            },
-                            "messaging_type": "RESPONSE",
-                            "message": {
-                                "text": "向右滑動即可選擇查詢年度",
-                                "quick_replies": [
-                                    {
-                                        "content_type": "text",
-                                        "title": "103 學年度",
-                                        "payload": "CALENDAR_103",
-                                    }, {
-                                        "content_type": "text",
-                                        "title": "104 學年度",
-                                        "payload": "CALENDAR_104",
-                                    }, {
-                                        "content_type": "text",
-                                        "title": "105 學年度",
-                                        "payload": "CALENDAR_105",
-                                    }, {
-                                        "content_type": "text",
-                                        "title": "106 學年度",
-                                        "payload": "CALENDAR_106",
-                                    }, {
-                                        "content_type": "text",
-                                        "title": "107 學年度",
-                                        "payload": "CALENDAR_107",
-                                    }, {
-                                        "content_type": "text",
-                                        "title": "108 學年度",
-                                        "payload": "CALENDAR_108",
-                                    }, {
-                                        "content_type": "text",
-                                        "title": "109 學年度",
-                                        "payload": "CALENDAR_109",
-                                    }, {
-                                        "content_type": "text",
-                                        "title": "110 學年度",
-                                        "payload": "CALENDAR_110",
-                                    }
-                                ]
-                            }
-                        }
-
-                        response = requests.post(
-                            'https://graph.facebook.com/me/messages',
-                            headers=headers,
-                            params=params,
-                            json=data
-                        )
-                        print(response.content)
+                        all_calendar(sender_id, headers, params)
                     elif 'text' in messaging_event['message']:
                         if sender_id in flag:
                             if flag[sender_id] == 1:
