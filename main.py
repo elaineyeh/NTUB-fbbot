@@ -1,11 +1,12 @@
 from fastapi import FastAPI, Request
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from pymessenger import Bot
+from room_location import ntub_room_location
+from init_menu import init_menu
+from config import Settings
+import sqlalchemy
 import requests
 import orm
-from room_location import ntub_room_location
-
-from config import Settings
 
 app = FastAPI()
 
@@ -155,6 +156,9 @@ def process_message(messaging, message):
         if state.function:
             function = mapping.get(state.function)
             function(user.fb_id, headers, params)
+            user.state_id = sqlalchemy.sql.null()
+            db.add(user)
+            db.commit()
             return
         # Find next states
         sub_states = db.query(orm.State).filter(
@@ -194,7 +198,7 @@ def process_messaging(messaging):
         process_message(messaging, messaging['message'])
 
 
-@app.post("/")
+@app.post("/new")
 async def new(request: Request):
     print(await request.json())
     data = await request.json()
@@ -246,7 +250,7 @@ async def new(request: Request):
     '''
 
 
-@app.post("/old")
+@app.post("/")
 async def echo(request: Request):
     print(await request.json())
     data = await request.json()
@@ -261,6 +265,8 @@ async def echo(request: Request):
                 params = (
                     ('access_token', PAGE_ACCESS_TOKEN),
                 )
+
+                init_menu(sender_id, headers, params)
 
                 if messaging_event.get('message'):
                     if messaging_event['message'].get('quick_reply'):
@@ -432,7 +438,7 @@ async def echo(request: Request):
                             json=data
                         )
                         print(response.content)
-                    elif messaging_event['message']['text'] == '查詢歷年行事曆':
+                    elif 'text' in messaging_event['message'] and  messaging_event['message']['text'] == '查詢歷年行事曆':
                         data = {
                             "recipient": {
                                 "id": sender_id
@@ -520,81 +526,6 @@ async def echo(request: Request):
                 if messaging_event.get('postback'):
                     # Initialize
                     if messaging_event['postback']['title'] == 'Get Started':
-                        data = {
-                            "psid": sender_id,
-                            "persistent_menu": [
-                                {
-                                    "locale": "default",
-                                    "composer_input_disabled": False,
-                                    "call_to_actions": [
-                                        {
-                                            "type": "postback",
-                                            "title": "顯示快捷按鈕",
-                                            "payload": "QUICK_REPLY"
-                                        },
-                                        {
-                                            "type": "web_url",
-                                            "title": "國立臺北商業大學",
-                                            "url": "www.ntub.edu.tw",
-                                            "webview_height_ratio": "full"
-                                        },
-                                        {
-                                            "type": "web_url",
-                                            "title": "學生資訊系統",
-                                            "url": "http://ntcbadm1.ntub.edu.tw/",
-                                            "webview_height_ratio": "full"
-                                        },
-                                        {
-                                            "type": "web_url",
-                                            "title": "Blackboard",
-                                            "url": "https://bb.ntub.edu.tw",
-                                            "webview_height_ratio": "full"
-                                        },
-                                        {
-                                            "type": "web_url",
-                                            "title": "北商大圖書館",
-                                            "url": "http://library.ntub.edu.tw/mp.asp?mp=1",
-                                            "webview_height_ratio": "full"
-                                        },
-                                        {
-                                            "type": "web_url",
-                                            "title": "北商大活動報名系統",
-                                            "url": "https://signupactivity.ntub.edu.tw/activity/main",
-                                            "webview_height_ratio": "full"
-                                        },
-                                        {
-                                            "type": "web_url",
-                                            "title": "各式表單",
-                                            "url": "https://stud.ntub.edu.tw/p/412-1007-459.php?Lang=zh-tw",
-                                            "webview_height_ratio": "full"
-                                        },
-                                        {
-                                            "type": "web_url",
-                                            "title": "臺銀學雜費入口",
-                                            "url": "https://school.bot.com.tw/newTwbank/index.aspx",
-                                            "webview_height_ratio": "full"
-                                        },
-                                        {
-                                            "type": "web_url",
-                                            "title": "心靈諮商室諮詢",
-                                            "url": "https://counseling.ntub.edu.tw/cs_ntub/apps/cs/ntub/index.aspx",
-                                            "webview_height_ratio": "full"
-                                        }, {
-                                            "type": "postback",
-                                            "title": "意見回饋",
-                                            "payload": "FEEDBACK"
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-
-                        response = requests.post(
-                            'https://graph.facebook.com/v10.0/me/custom_user_settings',
-                            headers=headers,
-                            params=params,
-                            json=data
-                        )
                         print(response.content)
 
                         data = {
@@ -615,28 +546,28 @@ async def echo(request: Request):
                         )
                         print(response.content)
 
-                        data = {
-                            "ice_breakers": [
-                                {
-                                    "question": "如何進入學校官網？",
-                                    "payload": "NTUB_WEB_SITE"
-                                },
-                                {
-                                    "question": "最近學校有舉辦什麼活動？",
-                                    "payload": "NTUB_ACTIVITY"
-                                },
-                            ]
-                        }
+                        # data = {
+                        #     "ice_breakers": [
+                        #         {
+                        #             "question": "如何進入學校官網？",
+                        #             "payload": "NTUB_WEB_SITE"
+                        #         },
+                        #         {
+                        #             "question": "最近學校有舉辦什麼活動？",
+                        #             "payload": "NTUB_ACTIVITY"
+                        #         },
+                        #     ]
+                        # }
+#
+                        # response = requests.post(
+                        #     'https://graph.facebook.com/v10.0/me/messenger_profile',
+                        #     headers=headers,
+                        #     params=params,
+                        #     json=data
+                        # )
+                        # print(response.content)
 
-                        response = requests.post(
-                            'https://graph.facebook.com/v10.0/me/messenger_profile',
-                            headers=headers,
-                            params=params,
-                            json=data
-                        )
-                        print(response.content)
-
-                        return "Success", 200
+                        # return "Success", 200
 
                     if messaging_event['postback']['payload'] == 'NTUB_WEB_SITE':
                         data = {
