@@ -16,8 +16,8 @@ def init_menu(sender_id, headers, params):
                     },
                     {
                         "type": "postback",
-                        "title": "分機查詢",
-                        "payload": "PHONE_SEARCH"
+                        "title": "訂閱活動通知",
+                        "payload": "SUBCRIBE_ACTIVITY"
                     },
                     {
                         "type": "web_url",
