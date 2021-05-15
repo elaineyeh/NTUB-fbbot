@@ -3,6 +3,7 @@ from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from pymessenger import Bot
 from room_location import ntub_room_location
 from all_calendar import all_calendar
+from link_result import link_result
 from init_menu import init_menu
 from config import Settings
 import sqlalchemy
@@ -28,7 +29,8 @@ conf = ConnectionConfig(
 )
 mapping = {
     'NTUB_ROOM_LOCATION': ntub_room_location,
-    'ALL_CALENDAR': all_calendar
+    'ALL_CALENDAR': all_calendar,
+    'LINK_RESULT': link_result,
 }
 
 

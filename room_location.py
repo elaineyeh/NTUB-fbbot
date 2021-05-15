@@ -1,7 +1,7 @@
 import requests
 
 
-def ntub_room_location(sender_id, headers, params):
+def ntub_room_location(sender_id=None, name=None, headers=None, params=None, **kwargs):
     data = {
         "recipient": {
             "id": sender_id
