@@ -1,10 +1,11 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, responses
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from pymessenger import Bot
 from room_location import ntub_room_location
 from all_calendar import all_calendar
 from link_result import link_result
 from init_menu import init_menu
+from search_contacts import search_name, search_name_text
 from config import Settings
 import sqlalchemy
 import requests
@@ -31,7 +32,18 @@ mapping = {
     'NTUB_ROOM_LOCATION': ntub_room_location,
     'ALL_CALENDAR': all_calendar,
     'LINK_RESULT': link_result,
+    'NAME_SEARCH_TEXT': search_name_text,
+    'SEARCH_NAME': search_name
 }
+
+@app.get("/phone")
+async def phone(phone_number: str):
+    return responses.RedirectResponse(f"tel:{phone_number}", status_code=302)
+
+
+@app.get("/email")
+async def email(email: str):
+    return responses.RedirectResponse(f"mailto:{email}", status_code=302)
 
 
 @app.get("/")
@@ -147,7 +159,13 @@ def process_message(messaging, message):
         in sub_states
     ]
     # NTUB_ROOM_LOCATION
-    payload = message['quick_reply']['payload']
+    payload = None
+    if 'quick_reply' in message:
+        payload = message['quick_reply']['payload']
+    elif 'text' in message:
+        payload = message['text']
+
+    state = db.query(orm.State).filter(orm.State.id == user.state_id).one_or_none()
     print(payload, sub_state_names)
     if payload in sub_state_names:
         state = db.query(orm.State).filter(
@@ -161,7 +179,8 @@ def process_message(messaging, message):
         print(state.function)
         if state.function:
             function = mapping.get(state.function)
-            function(sender_id=user.fb_id, headers=headers, params=params, name=payload)
+            function(sender_id=user.fb_id, headers=headers,
+                     params=params, name=payload)
             if not db.query(orm.State).filter(
                 orm.State.parent_id == user.state_id
             ).all():
@@ -197,6 +216,19 @@ def process_message(messaging, message):
                 params=params,
                 json=data
             )
+    elif state and state.is_input and state.function:
+        print('in ', state, state.is_input, state.function)
+        function = mapping.get(state.function)
+        function(sender_id=user.fb_id, headers=headers,
+                    params=params, name=payload)
+        if not db.query(orm.State).filter(
+            orm.State.parent_id == user.state_id
+        ).all():
+            user.state_id = sqlalchemy.sql.null()
+        db.add(user)
+        db.commit()
+        return
+
     db.close()
 
 
@@ -447,7 +479,7 @@ async def echo(request: Request):
                             json=data
                         )
                         print(response.content)
-                    elif 'text' in messaging_event['message'] and  messaging_event['message']['text'] == '查詢歷年行事曆':
+                    elif 'text' in messaging_event['message'] and messaging_event['message']['text'] == '查詢歷年行事曆':
                         all_calendar(sender_id, headers, params)
                     elif 'text' in messaging_event['message']:
                         if sender_id in flag:
