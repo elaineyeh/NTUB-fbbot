@@ -146,6 +146,7 @@ def process_message(messaging, message):
     ]
     # NTUB_ROOM_LOCATION
     payload = message['quick_reply']['payload']
+    print(payload, sub_state_names)
     if payload in sub_state_names:
         state = db.query(orm.State).filter(
             orm.State.name == payload
@@ -155,10 +156,14 @@ def process_message(messaging, message):
         db.add(user)
         db.commit()
         # Execute state function
+        print(state.function)
         if state.function:
             function = mapping.get(state.function)
-            function(user.fb_id, headers, params)
-            user.state_id = sqlalchemy.sql.null()
+            function(sender_id=user.fb_id, headers=headers, params=params, name=payload)
+            if not db.query(orm.State).filter(
+                orm.State.parent_id == user.state_id
+            ).all():
+                user.state_id = sqlalchemy.sql.null()
             db.add(user)
             db.commit()
             return

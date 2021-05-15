@@ -1,7 +1,7 @@
 import requests
 
 
-def all_calendar(sender_id, headers, params):
+def all_calendar(sender_id=None, name=None, headers=None, params=None, **kwargs):
     data = {
         "recipient": {
             "id": sender_id

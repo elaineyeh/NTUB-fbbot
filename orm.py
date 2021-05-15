@@ -29,6 +29,8 @@ class Link(Base):
     discription = Column(String)
     button_label = Column(String)
     url = Column(String)
+    title = Column(String)
+    img_url = Column(String)
 
 
 class Log(Base):
