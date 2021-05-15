@@ -72,6 +72,13 @@ class User(Base):
     state_id = Column(ForeignKey('ub_state.id', ondelete='SET NULL', onupdate='SET NULL'))
 
 
+class Contact(Base):
+    __tablename__ = "ub_contact"
+    id = Column(Integer, primary_key=True, index=True)
+    fb_id = Column(String)
+    contact = Column(JSONB)
+
+
 '''
 # Create
 user = User()

@@ -5,7 +5,9 @@ from room_location import ntub_room_location
 from all_calendar import all_calendar
 from link_result import link_result
 from init_menu import init_menu
-from search_contacts import search_name, search_name_text
+from search_contacts import show_phone
+from quick_replies import quick_replies
+from search_contacts import search_name, search_name_text, research_phone, finish_phone
 from config import Settings
 import sqlalchemy
 import requests
@@ -33,8 +35,12 @@ mapping = {
     'ALL_CALENDAR': all_calendar,
     'LINK_RESULT': link_result,
     'NAME_SEARCH_TEXT': search_name_text,
-    'SEARCH_NAME': search_name
+    'SEARCH_NAME': search_name,
+    'MORE_CONTACT': show_phone,
+    'RESEARCH_PHONE': research_phone,
+    'FINISH_PHONE': finish_phone
 }
+
 
 @app.get("/phone")
 async def phone(phone_number: str):
@@ -100,6 +106,19 @@ def process_postback(messaging, postback):
         user.state_id = state.id
         db.add(user)
         db.commit()
+        # Execute state function
+        print(state.function)
+        if state.function:
+            function = mapping.get(state.function)
+            function(sender_id=user.fb_id, headers=headers,
+                     params=params, name=payload)
+            if not db.query(orm.State).filter(
+                orm.State.parent_id == user.state_id
+            ).all():
+                user.state_id = sqlalchemy.sql.null()
+            db.add(user)
+            db.commit()
+            return
         sub_states = db.query(orm.State).filter(
             orm.State.parent_id == user.state_id
         ).all()
@@ -114,8 +133,8 @@ def process_postback(messaging, postback):
                 "quick_replies": [
                     {
                         "content_type": "text",
-                                        "title": sub_state.label,
-                                        "payload": sub_state.name,
+                        "title": sub_state.label,
+                        "payload": sub_state.name,
                     }
                     for sub_state in sub_states
                 ]
@@ -165,7 +184,8 @@ def process_message(messaging, message):
     elif 'text' in message:
         payload = message['text']
 
-    state = db.query(orm.State).filter(orm.State.id == user.state_id).one_or_none()
+    state = db.query(orm.State).filter(
+        orm.State.id == user.state_id).one_or_none()
     print(payload, sub_state_names)
     if payload in sub_state_names:
         state = db.query(orm.State).filter(
@@ -178,49 +198,23 @@ def process_message(messaging, message):
         # Execute state function
         print(state.function)
         if state.function:
-            function = mapping.get(state.function)
-            function(sender_id=user.fb_id, headers=headers,
-                     params=params, name=payload)
             if not db.query(orm.State).filter(
                 orm.State.parent_id == user.state_id
             ).all():
                 user.state_id = sqlalchemy.sql.null()
             db.add(user)
             db.commit()
+            function = mapping.get(state.function)
+            function(sender_id=user.fb_id, headers=headers,
+                     params=params, name=payload)
             return
         # Find next states
-        sub_states = db.query(orm.State).filter(
-            orm.State.parent_id == user.state_id
-        ).all()
-        if sub_states:
-            data = {
-                "recipient": {
-                    "id": user.fb_id
-                },
-                "messaging_type": "RESPONSE",
-                "message": {
-                    "text": state.label,
-                    "quick_replies": [
-                        {
-                            "content_type": "text",
-                            "title": sub_state.label,
-                            "payload": sub_state.name,
-                        }
-                        for sub_state in sub_states
-                    ]
-                }
-            }
-            requests.post(
-                'https://graph.facebook.com/v10.0/me/messages',
-                headers=headers,
-                params=params,
-                json=data
-            )
+        quick_replies(user.fb_id, headers, params, state)
     elif state and state.is_input and state.function:
         print('in ', state, state.is_input, state.function)
         function = mapping.get(state.function)
         function(sender_id=user.fb_id, headers=headers,
-                    params=params, name=payload)
+                 params=params, name=payload)
         if not db.query(orm.State).filter(
             orm.State.parent_id == user.state_id
         ).all():
