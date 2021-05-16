@@ -1,4 +1,3 @@
-import sqlalchemy
 import requests
 import orm
 

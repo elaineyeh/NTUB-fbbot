@@ -77,6 +77,7 @@ def process_postback(messaging, postback):
     # 5. response
     global headers, params
     db = orm.SessionLocal()
+
     user_fb_id = messaging['sender']['id']
     user = db.query(orm.User).filter(
         orm.User.fb_id == user_fb_id
@@ -87,9 +88,17 @@ def process_postback(messaging, postback):
         db.add(db_user)
         db.commit()
         user = db_user
+
+    payload = postback['payload']
+    if payload == 'QUICK_REPLY':
+        user.state_id = sqlalchemy.sql.null()
+        db.add(user)
+        db.commit()
+
     sub_states = db.query(orm.State).filter(
         orm.State.parent_id == user.state_id
     ).all()
+
     if not sub_states:
         pass
     sub_state_names = [
@@ -97,7 +106,7 @@ def process_postback(messaging, postback):
         for sub_state
         in sub_states
     ]
-    payload = postback['payload']
+
     if payload in sub_state_names:
         # Change user state to input state
         state = db.query(orm.State).filter(
@@ -109,15 +118,15 @@ def process_postback(messaging, postback):
         # Execute state function
         print(state.function)
         if state.function:
-            function = mapping.get(state.function)
-            function(sender_id=user.fb_id, headers=headers,
-                     params=params, name=payload)
             if not db.query(orm.State).filter(
                 orm.State.parent_id == user.state_id
             ).all():
                 user.state_id = sqlalchemy.sql.null()
             db.add(user)
             db.commit()
+            function = mapping.get(state.function)
+            function(sender_id=user.fb_id, headers=headers,
+                     params=params, name=payload)
             return
         sub_states = db.query(orm.State).filter(
             orm.State.parent_id == user.state_id
@@ -175,7 +184,7 @@ def process_message(messaging, message):
     sub_state_names = [
         sub_state.name
         for sub_state
-        in sub_states
+        in sub_states[::-1]
     ]
     # NTUB_ROOM_LOCATION
     payload = None
