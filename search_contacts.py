@@ -10,7 +10,7 @@ bot = Bot(PAGE_ACCESS_TOKEN)
 ngrok = "https://5f848e2eb394.ap.ngrok.io"
 
 
-def research_phone(sender_id, headers, params, **kwargs):
+async def research_phone(sender_id, headers, params, **kwargs):
     db = orm.SessionLocal()
     user = db.query(orm.User).filter(orm.User.fb_id == sender_id).one_or_none()
     state = db.query(orm.State).filter(orm.State.name == 'SEARCH_PHONE').one_or_none()
@@ -19,10 +19,10 @@ def research_phone(sender_id, headers, params, **kwargs):
     db.commit()
     print(user.fb_id, state.name, '----------- is me research phone')
 
-    quick_replies(sender_id, headers, params, state)
+    await quick_replies(sender_id, headers, params, state)
 
 
-def none_search(sender_id, headers, params, **kwargs):
+async def none_search(sender_id, headers, params, **kwargs):
     data = {
         "recipient": {
             "id": sender_id
@@ -53,7 +53,7 @@ def none_search(sender_id, headers, params, **kwargs):
     print(response.content)
 
 
-def finish_phone(sender_id, headers, params, **kwargs):
+async def finish_phone(sender_id, headers, params, **kwargs):
     db = orm.SessionLocal()
     user = db.query(orm.User).filter(orm.User.fb_id == sender_id).one_or_none()
     state = db.query(orm.State).filter(orm.State.name == 'QUICK_REPLY').one_or_none()
@@ -61,10 +61,10 @@ def finish_phone(sender_id, headers, params, **kwargs):
     db.add(user)
     db.commit()
 
-    quick_replies(sender_id, headers, params, state)
+    await quick_replies(sender_id, headers, params, state)
 
 
-def search_name(sender_id, headers, params, name, **kwargs):
+async def search_name(sender_id, headers, params, name, **kwargs):
     print('called--------------------------------------')
     db = orm.SessionLocal()
     phone_list = []
@@ -78,7 +78,7 @@ def search_name(sender_id, headers, params, name, **kwargs):
         db.add(user)
         db.commit()
 
-        none_search(sender_id, headers, params)
+        await none_search(sender_id, headers, params)
         return
 
     for result_response in result_responses.json():
@@ -115,10 +115,10 @@ def search_name(sender_id, headers, params, name, **kwargs):
     db.add(contact)
     db.commit()
 
-    show_phone(sender_id, headers, params)
+    await show_phone(sender_id, headers, params)
 
 
-def show_phone(sender_id, headers, params, **kwargs):
+async def show_phone(sender_id, headers, params, **kwargs):
     print("called---------------------------------")
     db = orm.SessionLocal()
     contact = db.query(orm.Contact).filter(
@@ -179,7 +179,7 @@ def show_phone(sender_id, headers, params, **kwargs):
     print(response.content)
 
 
-def search_name_text(sender_id, **kwargs):
+async def search_name_text(sender_id, **kwargs):
     db = orm.SessionLocal()
     user = db.query(orm.User).filter(orm.User.fb_id == sender_id).one_or_none()
 

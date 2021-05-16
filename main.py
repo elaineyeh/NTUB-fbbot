@@ -1,12 +1,10 @@
 from fastapi import FastAPI, Request, responses
-from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from pymessenger import Bot
-from room_location import ntub_room_location
-from all_calendar import all_calendar
 from link_result import link_result
 from init_menu import init_menu
 from search_contacts import show_phone
 from quick_replies import quick_replies
+from feedback import feedback, send_feedback
 from search_contacts import search_name, search_name_text, research_phone, finish_phone
 from config import Settings
 import sqlalchemy
@@ -20,25 +18,16 @@ PAGE_ACCESS_TOKEN = Settings().PAGE_ACCESS_TOKEN
 bot = Bot(PAGE_ACCESS_TOKEN)
 
 flag = {}
-conf = ConnectionConfig(
-    MAIL_USERNAME=Settings().MAIL_USERNAME,
-    MAIL_PASSWORD=Settings().MAIL_PASSWORD,
-    MAIL_FROM=Settings().MAIL_FROM,
-    MAIL_PORT=Settings().MAIL_PORT,
-    MAIL_SERVER=Settings().MAIL_SERVER,
-    MAIL_TLS=Settings().MAIL_TLS,
-    MAIL_SSL=Settings().MAIL_SSL,
-    USE_CREDENTIALS=Settings().USE_CREDENTIALS
-)
+
 mapping = {
-    'NTUB_ROOM_LOCATION': ntub_room_location,
-    'ALL_CALENDAR': all_calendar,
     'LINK_RESULT': link_result,
     'NAME_SEARCH_TEXT': search_name_text,
     'SEARCH_NAME': search_name,
     'MORE_CONTACT': show_phone,
     'RESEARCH_PHONE': research_phone,
-    'FINISH_PHONE': finish_phone
+    'FINISH_PHONE': finish_phone,
+    'FEEDBACK': feedback,
+    'SEND_FEEDBACK': send_feedback
 }
 
 
@@ -69,7 +58,7 @@ params = (
 )
 
 
-def process_postback(messaging, postback):
+async def process_postback(messaging, postback):
     # 1. user
     # 2. state
     # 3. get all sub states
@@ -125,8 +114,8 @@ def process_postback(messaging, postback):
             db.add(user)
             db.commit()
             function = mapping.get(state.function)
-            function(sender_id=user.fb_id, headers=headers,
-                     params=params, name=payload)
+            await function(sender_id=user.fb_id, headers=headers,
+                           params=params, name=payload)
             return
         sub_states = db.query(orm.State).filter(
             orm.State.parent_id == user.state_id
@@ -158,7 +147,7 @@ def process_postback(messaging, postback):
     db.close()
 
 
-def process_message(messaging, message):
+async def process_message(messaging, message):
     # 1. user
     # 2. state
     # 3. get all sub states
@@ -214,16 +203,16 @@ def process_message(messaging, message):
             db.add(user)
             db.commit()
             function = mapping.get(state.function)
-            function(sender_id=user.fb_id, headers=headers,
-                     params=params, name=payload)
+            await function(sender_id=user.fb_id, headers=headers,
+                           params=params, name=payload)
             return
         # Find next states
-        quick_replies(user.fb_id, headers, params, state)
+        await quick_replies(user.fb_id, headers, params, state)
     elif state and state.is_input and state.function:
         print('in ', state, state.is_input, state.function)
         function = mapping.get(state.function)
-        function(sender_id=user.fb_id, headers=headers,
-                 params=params, name=payload)
+        await function(sender_id=user.fb_id, headers=headers,
+                       params=params, name=payload)
         if not db.query(orm.State).filter(
             orm.State.parent_id == user.state_id
         ).all():
@@ -235,11 +224,11 @@ def process_message(messaging, message):
     db.close()
 
 
-def process_messaging(messaging):
+async def process_messaging(messaging):
     if 'postback' in messaging:
-        process_postback(messaging, messaging['postback'])
+        await process_postback(messaging, messaging['postback'])
     if 'message' in messaging:
-        process_message(messaging, messaging['message'])
+        await process_message(messaging, messaging['message'])
 
 
 @app.post("/")
@@ -248,7 +237,7 @@ async def new(request: Request):
     data = await request.json()
     for entry in data['entry']:
         for messaging in entry['messaging']:
-            process_messaging(messaging)
+            await process_messaging(messaging)
     return "Success", 200
     # is_postback = 'postback' in data['entry'][0]
     '''
@@ -483,8 +472,10 @@ async def echo(request: Request):
                         )
                         print(response.content)
                     elif 'text' in messaging_event['message'] and messaging_event['message']['text'] == '查詢歷年行事曆':
-                        all_calendar(sender_id, headers, params)
+                        # all_calendar(sender_id, headers, params)
+                        pass
                     elif 'text' in messaging_event['message']:
+                        '''
                         if sender_id in flag:
                             if flag[sender_id] == 1:
                                 feedback = messaging_event['message']['text']
@@ -510,6 +501,7 @@ async def echo(request: Request):
                             messaging_text = messaging_event['message']['text']
                             response = messaging_text
                             bot.send_text_message(sender_id, response)
+                        '''
                     else:
                         messaging_text = 'no text'
 

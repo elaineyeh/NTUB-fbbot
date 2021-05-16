@@ -2,7 +2,7 @@ import requests
 import orm
 
 
-def quick_replies(sender_id, headers, params, state, **kwargs):
+async def quick_replies(sender_id, headers, params, state, **kwargs):
     print("quick_replies---------------------------")
     db = orm.SessionLocal()
     user = db.query(orm.User).filter(orm.User.fb_id == sender_id).one_or_none()

@@ -2,7 +2,7 @@ import requests
 import orm
 
 
-def link_result(sender_id=None, name=None, headers=None, params=None, **kwargs):
+async def link_result(sender_id=None, name=None, headers=None, params=None, **kwargs):
     print("called")
     link_list = []
     db = orm.SessionLocal()

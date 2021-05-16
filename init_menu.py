@@ -1,7 +1,7 @@
 import requests
 
 
-def init_menu(sender_id, headers, params):
+async def init_menu(sender_id, headers, params):
     data = {
         "psid": sender_id,
         "persistent_menu": [
@@ -76,7 +76,7 @@ def init_menu(sender_id, headers, params):
         ]
     }
 
-    response = requests.post(
+    requests.post(
         'https://graph.facebook.com/v10.0/me/custom_user_settings',
         headers=headers,
         params=params,
