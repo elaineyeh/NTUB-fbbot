@@ -76,9 +76,11 @@ async def init_menu(sender_id, headers, params):
         ]
     }
 
-    requests.post(
+    resp = requests.post(
         'https://graph.facebook.com/v10.0/me/custom_user_settings',
         headers=headers,
         params=params,
         json=data
     )
+    print(resp.json())
+    print("finished init menu")

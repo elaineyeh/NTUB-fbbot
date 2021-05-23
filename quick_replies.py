@@ -17,7 +17,7 @@ async def quick_replies(sender_id, headers, params, state, **kwargs):
             },
             "messaging_type": "RESPONSE",
             "message": {
-                "text": state.label,
+                "text": state.prompt or state.label,
                 "quick_replies": [
                     {
                         "content_type": "text",

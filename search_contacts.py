@@ -64,12 +64,9 @@ async def finish_phone(sender_id, headers, params, **kwargs):
     await quick_replies(sender_id, headers, params, state)
 
 
-async def search_name(sender_id, headers, params, name, **kwargs):
-    print('called--------------------------------------')
-    db = orm.SessionLocal()
+async def show_result(sender_id, headers, params, result_responses, **kwargs):
     phone_list = []
-    result_responses = requests.get(
-        'https://api-auth.ntub.edu.tw/api/contacts/?staff_name={name}'.format(name=name))
+    db = orm.SessionLocal()
 
     if not result_responses.json():
         user = db.query(orm.User).filter(orm.User.fb_id == sender_id).one_or_none()
@@ -116,6 +113,23 @@ async def search_name(sender_id, headers, params, name, **kwargs):
     db.commit()
 
     await show_phone(sender_id, headers, params)
+
+
+async def search_name(sender_id, headers, params, name, **kwargs):
+    print('called name--------------------------------------')
+
+    result_responses = requests.get(
+        'https://api-auth.ntub.edu.tw/api/contacts/?staff_name={name}'.format(name=name))
+
+    await show_result(sender_id, headers, params, result_responses, **kwargs)
+
+
+async def search_subject(sender_id, headers, params, label, **kwargs):
+    print('called subject--------------------------------------')
+    result_responses = requests.get(
+        'https://api-auth.ntub.edu.tw/api/contacts/?staff_group={label}'.format(label=label))
+
+    await show_result(sender_id, headers, params, result_responses, **kwargs)
 
 
 async def show_phone(sender_id, headers, params, **kwargs):

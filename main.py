@@ -5,7 +5,7 @@ from init_menu import init_menu
 from search_contacts import show_phone
 from quick_replies import quick_replies
 from feedback import feedback, send_feedback
-from search_contacts import search_name, search_name_text, research_phone, finish_phone
+from search_contacts import search_name, search_name_text, research_phone, finish_phone, search_subject
 from config import Settings
 import sqlalchemy
 import requests
@@ -14,7 +14,6 @@ import orm
 app = FastAPI()
 
 PAGE_ACCESS_TOKEN = Settings().PAGE_ACCESS_TOKEN
-
 bot = Bot(PAGE_ACCESS_TOKEN)
 
 flag = {}
@@ -25,6 +24,7 @@ mapping = {
     'SEARCH_NAME': search_name,
     'MORE_CONTACT': show_phone,
     'RESEARCH_PHONE': research_phone,
+    'SEARCH_SUBJECT': search_subject,
     'FINISH_PHONE': finish_phone,
     'FEEDBACK': feedback,
     'SEND_FEEDBACK': send_feedback
@@ -127,7 +127,7 @@ async def process_postback(messaging, postback):
             },
             "messaging_type": "RESPONSE",
             "message": {
-                "text": state.label,
+                "text": state.prompt or state.label,
                 "quick_replies": [
                     {
                         "content_type": "text",
@@ -179,6 +179,7 @@ async def process_message(messaging, message):
     payload = None
     if 'quick_reply' in message:
         payload = message['quick_reply']['payload']
+        label = message['text']
     elif 'text' in message:
         payload = message['text']
 
@@ -204,7 +205,7 @@ async def process_message(messaging, message):
             db.commit()
             function = mapping.get(state.function)
             await function(sender_id=user.fb_id, headers=headers,
-                           params=params, name=payload)
+                           params=params, name=payload, label=label)
             return
         # Find next states
         await quick_replies(user.fb_id, headers, params, state)
@@ -299,7 +300,8 @@ async def echo(request: Request):
                     ('access_token', PAGE_ACCESS_TOKEN),
                 )
 
-                init_menu(sender_id, headers, params)
+                print("init_menu")
+                await init_menu(sender_id, headers, params)
 
                 if messaging_event.get('message'):
                     if messaging_event['message'].get('quick_reply'):

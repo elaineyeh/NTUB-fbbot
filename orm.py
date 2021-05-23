@@ -43,6 +43,7 @@ class State(Base):
     __tablename__ = "ub_state"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
+    prompt = Column(String)
     label = Column(String)
     function = Column(String)
     is_input = Column(Boolean, default=False)
