@@ -124,6 +124,14 @@ async def search_name(sender_id, headers, params, name, **kwargs):
     await show_result(sender_id, headers, params, result_responses, **kwargs)
 
 
+async def search_location(sender_id, headers, params, label, **kwargs):
+    print('called location--------------------------------------')
+    result_responses = requests.get(
+        'https://api-auth.ntub.edu.tw/api/contacts/?staff_group={label}'.format(label=label))
+
+    await show_result(sender_id, headers, params, result_responses, **kwargs)
+
+
 async def search_subject(sender_id, headers, params, label, **kwargs):
     print('called subject--------------------------------------')
     result_responses = requests.get(

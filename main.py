@@ -5,7 +5,7 @@ from init_menu import init_menu
 from search_contacts import show_phone
 from quick_replies import quick_replies
 from feedback import feedback, send_feedback
-from search_contacts import search_name, search_name_text, research_phone, finish_phone, search_subject
+from search_contacts import search_name, search_name_text, research_phone, finish_phone, search_subject, search_location
 from config import Settings
 import sqlalchemy
 import requests
@@ -25,6 +25,7 @@ mapping = {
     'MORE_CONTACT': show_phone,
     'RESEARCH_PHONE': research_phone,
     'SEARCH_SUBJECT': search_subject,
+    "SEARCH_LOCATION": search_location,
     'FINISH_PHONE': finish_phone,
     'FEEDBACK': feedback,
     'SEND_FEEDBACK': send_feedback
