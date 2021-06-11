@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.dialects.postgresql import JSONB
 
 SQLALCHEMY_DATABASE_URL = "postgresql://postgres:@127.0.0.1:5432/ub"
@@ -76,6 +76,29 @@ class Contact(Base):
     id = Column(Integer, primary_key=True, index=True)
     fb_id = Column(String)
     contact = Column(JSONB)
+
+
+class Activity(Base):
+    __tablename__ = "ub_activity"
+    id = Column(Integer, primary_key=True, index=True)
+    activity_id = Column(Integer)
+    activity_name = Column(String)
+    unit_name = Column(String)
+    apply_qualification_list = Column(JSONB)
+    apply_start_date = Column(DateTime)
+    apply_start_time = Column(DateTime)
+    apply_end_date = Column(DateTime)
+    apply_end_time = Column(DateTime)
+    post_start_time = Column(DateTime)
+    post_end_time = Column(DateTime)
+    activity_period_list = Column(JSONB)
+
+
+class UserActivity(Base):
+    __tablename__ = "ub_useractivity"
+    id = Column(Integer, primary_key=True, index=True)
+    fb_id = Column(String)
+    activity = Column(JSONB)
 
 
 '''
