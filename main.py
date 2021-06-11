@@ -5,7 +5,15 @@ from init_menu import init_menu
 from search_contacts import show_phone
 from quick_replies import quick_replies
 from feedback import feedback, send_feedback
-from search_contacts import search_name, search_name_text, research_phone, finish_phone, search_subject, search_location
+from search_contacts import (
+    search_name,
+    search_name_text,
+    research_phone,
+    finish_phone,
+    search_subject,
+    search_location
+)
+from activity_crawling import user_identify, show_activity, create_formated_activities
 from config import Settings
 import sqlalchemy
 import requests
@@ -28,7 +36,10 @@ mapping = {
     "SEARCH_LOCATION": search_location,
     'FINISH_PHONE': finish_phone,
     'FEEDBACK': feedback,
-    'SEND_FEEDBACK': send_feedback
+    'SEND_FEEDBACK': send_feedback,
+    'USER_IDENTIFY': user_identify,
+    'MORE_ACTIVITY': show_activity,
+    'NEWEST_ACTIVITY': create_formated_activities
 }
 
 
