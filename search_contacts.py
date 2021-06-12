@@ -89,7 +89,7 @@ async def show_result(sender_id, headers, params, result_responses, **kwargs):
 
         datum = {
             "title": result_response['staff']['user']['chineseFullName'],
-            "image_url": "https://i.imgur.com/MfU6ejy.jpg",
+            "image_url": "https://i.imgur.com/a6xg5Bo.jpeg",
             "buttons": [
                 {
                     "type": "web_url",
@@ -152,7 +152,7 @@ async def show_phone(sender_id, headers, params, **kwargs):
         phone_result = phone[-9:]
         phone_result.append({
             "title": "沒有找到你想要的嗎？",
-            "image_url": "https://i.imgur.com/MfU6ejy.jpg",
+            "image_url": "https://i.imgur.com/a6xg5Bo.jpeg",
             "buttons": [
                 {
                     "type": "postback",
@@ -190,15 +190,13 @@ async def show_phone(sender_id, headers, params, **kwargs):
             }
         }
     }
-    print(data)
 
-    response = requests.post(
+    requests.post(
         'https://graph.facebook.com/v2.6/me/messages',
         headers=headers,
         params=params,
         json=data
     )
-    print(response.content)
 
 
 async def search_name_text(sender_id, **kwargs):
