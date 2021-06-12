@@ -193,10 +193,8 @@ async def show_activity(sender_id, headers, params, **kwargs):
 
     if items.activity:
         user = db.query(orm.User).filter(orm.User.fb_id == sender_id).one_or_none()
-        print(user)
         state = db.query(orm.State).filter(orm.State.name == "NEWEST_ACTIVITY").one_or_none()
-        print(state)
-        user.state = state.id
+        user.state_id = state.id
         db.add(user)
         db.commit()
 
