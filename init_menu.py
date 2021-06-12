@@ -1,4 +1,9 @@
+import asyncio
 import requests
+import orm
+from config import Settings
+
+PAGE_ACCESS_TOKEN = Settings().PAGE_ACCESS_TOKEN
 
 
 async def init_menu(sender_id, headers, params):
@@ -78,3 +83,23 @@ async def init_menu(sender_id, headers, params):
     )
     print(resp.json())
     print("finished init menu")
+
+print(__name__)
+if __name__ == '__main__':
+    headers = {
+        'Content-Type': 'application/json',
+    }
+    params = (
+        ('access_token', PAGE_ACCESS_TOKEN),
+    )
+
+    db = orm.SessionLocal()
+    users = db.query(orm.User).all()
+
+    for user in users:
+        psid = user.fb_id
+        requests.delete(
+            f'https://graph.facebook.com/v10.0/me/custom_user_settings?psid={psid}&'
+            f'params=[%22persistent_menu%22]&access_token={PAGE_ACCESS_TOKEN}')
+
+        asyncio.run(init_menu(psid, headers, params))
