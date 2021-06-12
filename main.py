@@ -12,6 +12,7 @@ from search_contacts import (
     search_subject,
     search_location
 )
+from init_menu import init_menu
 from activity_crawling import user_identify, show_activity, create_formated_activities
 from config import Settings
 import sqlalchemy
@@ -87,6 +88,7 @@ async def process_postback(messaging, postback):
         db_user.fb_id = user_fb_id
         db.add(db_user)
         db.commit()
+        init_menu(user_fb_id, headers, params)
         user = db_user
 
     payload = postback['payload']
@@ -175,6 +177,7 @@ async def process_message(messaging, message):
         db_user.fb_id = user_fb_id
         db.add(db_user)
         db.commit()
+        init_menu(user_fb_id, headers, params)
         user = db_user
     sub_states = db.query(orm.State).filter(
         orm.State.parent_id == user.state_id
