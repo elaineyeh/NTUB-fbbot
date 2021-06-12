@@ -14,7 +14,9 @@ uvicorn main:app --reload
 # Init persistent_menu
 ### Delete `persistent_menu` if exists
 ```
-curl -X DELETE 'https://graph.facebook.com/v10.0/me/custom_user_settings?psid=<PSID>&params=[%22persistent_menu%22]&access_token=<PAGE_ACCESS_TOKEN>'
+requests.delete(
+            f'https://graph.facebook.com/v10.0/me/custom_user_settings?psid={psid}&'
+            f'params=[%22persistent_menu%22]&access_token={PAGE_ACCESS_TOKEN}')
 ```
 
 ### Init `get_started` before `init_menu`
@@ -25,4 +27,9 @@ curl -X POST -H "Content-Type: application/json" -d '{
 ```
 
 ### Init menu with `init_menu`
-    Call function in init_menu.py
+Use ipython, import init_menu and run the `init_menu` function
+
+### Update all user `persistent_menu`
+```shell-script
+python init_menu.py
+```
