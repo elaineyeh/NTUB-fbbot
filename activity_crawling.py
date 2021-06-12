@@ -130,13 +130,17 @@ async def create_formated_activities(sender_id, headers, params, **kwargs):
             activity = await object_as_dict(item)
             activity_id = activity['activity_id']
             activity_name = activity['activity_name']
-            start_date = activity['post_start_time']
+            start_date = activity['post_start_time'].date()
             start_time = activity['activity_period_list'][0]['ActivityStartTime']
-            end_date = activity['post_end_time']
+            start_time = start_time.split('T')[1]
+            start_time = start_time[:5]
+            end_date = activity['post_end_time'].date()
             end_time = activity['activity_period_list'][0]['ActivityEndTime']
+            end_time = end_time.split('T')[1]
+            end_time = end_time[:5]
             location = activity['activity_period_list'][0]['Location']
 
-            text = f"{start_date}{start_time}\n{end_date}{end_time}\n{location}"
+            text = f"{start_date} {start_time}-{end_date} {end_time}\n活動地點：{location}"
             url = f"https://signupactivity.ntub.edu.tw/activity/activityDetail/{activity_id}"
 
             activities.append({
