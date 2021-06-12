@@ -51,12 +51,6 @@ async def init_menu(sender_id, headers, params):
                     },
                     {
                         "type": "web_url",
-                        "title": "各式表單",
-                        "url": "https://stud.ntub.edu.tw/p/412-1007-459.php?Lang=zh-tw",
-                        "webview_height_ratio": "full"
-                    },
-                    {
-                        "type": "web_url",
                         "title": "臺銀學雜費入口",
                         "url": "https://school.bot.com.tw/newTwbank/index.aspx",
                         "webview_height_ratio": "full"

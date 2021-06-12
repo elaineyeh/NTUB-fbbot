@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Request, responses
 from pymessenger import Bot
 from link_result import link_result
-from init_menu import init_menu
 from search_contacts import show_phone
 from quick_replies import quick_replies
 from feedback import feedback, send_feedback
