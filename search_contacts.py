@@ -81,7 +81,6 @@ async def show_result(sender_id, headers, params, result_responses, **kwargs):
     for result_response in result_responses.json():
         phone = "+88634506333"
 
-        print(result_response)
         if result_response['ext'][0] != '8':
             phone = "+886233222777"
         phone = phone+","+result_response['ext']
