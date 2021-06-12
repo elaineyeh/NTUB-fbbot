@@ -11,13 +11,14 @@ async def link_result(sender_id=None, name=None, headers=None, params=None, **kw
     ).all()
 
     for link in links:
+        print("link: ", link.img_url)
         datum = {
             "title": link.title,
-            "image_url": "https://i.imgur.com/MfU6ejy.jpg",
+            "image_url": link.img_url,
             "subtitle": link.discription,
             "default_action": {
                 "type": "web_url",
-                "url": link.img_url,
+                "url": link.url,
                 "messenger_extensions": False,
                 "webview_height_ratio": "tall",
             },
