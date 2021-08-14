@@ -2,11 +2,18 @@ import asyncio
 import requests
 import orm
 from config import Settings
+from pymessenger import Bot
+
 
 PAGE_ACCESS_TOKEN = Settings().PAGE_ACCESS_TOKEN
 
+bot = Bot(PAGE_ACCESS_TOKEN)
+
 
 async def init_menu(sender_id, headers, params):
+    text = "請點選右下方第一個圖示選擇功能"
+    bot.send_text_message(sender_id, text)
+
     data = {
         "psid": sender_id,
         "persistent_menu": [
@@ -92,6 +99,7 @@ if __name__ == '__main__':
     params = (
         ('access_token', PAGE_ACCESS_TOKEN),
     )
+    data = '{ "get_started": {"payload": "Hi I am UB jun"} }'
 
     db = orm.SessionLocal()
     users = db.query(orm.User).all()
@@ -101,5 +109,11 @@ if __name__ == '__main__':
         requests.delete(
             f'https://graph.facebook.com/v10.0/me/custom_user_settings?psid={psid}&'
             f'params=[%22persistent_menu%22]&access_token={PAGE_ACCESS_TOKEN}')
+
+        response = requests.post(
+            'https://graph.facebook.com/v2.6/me/messenger_profile',
+            headers=headers,
+            params=params,
+            data=data)
 
         asyncio.run(init_menu(psid, headers, params))
