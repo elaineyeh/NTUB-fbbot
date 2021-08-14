@@ -96,7 +96,7 @@ async def process_postback(messaging, postback):
         db_user.fb_id = user_fb_id
         db.add(db_user)
         db.commit()
-        init_menu(user_fb_id, headers, params)
+        await init_menu(user_fb_id, headers, params)
         user = db_user
 
     payload = postback['payload']
@@ -185,7 +185,7 @@ async def process_message(messaging, message):
         db_user.fb_id = user_fb_id
         db.add(db_user)
         db.commit()
-        init_menu(user_fb_id, headers, params)
+        await init_menu(user_fb_id, headers, params)
         user = db_user
     sub_states = db.query(orm.State).filter(
         orm.State.parent_id == user.state_id
@@ -207,7 +207,6 @@ async def process_message(messaging, message):
 
     state = db.query(orm.State).filter(
         orm.State.id == user.state_id).one_or_none()
-    print(payload, sub_state_names)
     if payload in sub_state_names:
         state = db.query(orm.State).filter(
             orm.State.name == payload
