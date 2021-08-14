@@ -21,7 +21,7 @@ bot = Bot(PAGE_ACCESS_TOKEN)
 
 
 async def feedback(sender_id, headers, params, **kwargs):
-    text = "感謝您的使用，如有遇到任何使用上的問題，請在下方寫下您寶貴的意見"
+    text = "您的意見是UB醬前進的動力，請問有什麼建議給UB醬的嗎?可以在對話框直接留言唷~"
     bot.send_text_message(sender_id, text)
 
     db = orm.SessionLocal()
@@ -43,7 +43,7 @@ async def send_feedback(sender_id, headers, params, name, **kwargs):
     fm = FastMail(conf)
     await fm.send_message(message)
 
-    text = "謝謝您留下寶貴的意見，我們將盡快處理"
+    text = "感謝您的留言，UB醬將會盡快給您回復~"
     bot.send_text_message(sender_id, text)
 
     db = orm.SessionLocal()
