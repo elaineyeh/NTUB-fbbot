@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, responses
+from fastapi import FastAPI, Request, responses, Header
 from pymessenger import Bot
 from link_result import link_result
 from search_contacts import show_phone
@@ -15,9 +15,11 @@ from search_contacts import (
 from init_menu import init_menu
 from activity_crawling import user_identify, show_activity, create_formated_activities
 from config import Settings
+from typing import Optional
 import sqlalchemy
 import requests
 import orm
+import re
 
 app = FastAPI()
 
@@ -44,13 +46,19 @@ mapping = {
 
 
 @app.get("/phone")
-async def phone(phone_number: str):
-    return responses.RedirectResponse(f"tel:{phone_number}", status_code=302)
+async def phone(phone_number: str, user_agent: Optional[str] = Header(None)):
+    print("User-Agent", user_agent)
+    if re.findall("Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone", user_agent):
+        return responses.RedirectResponse(f"tel:{phone_number}", status_code=302)
+    return responses.Response("Please use you phone to call number.")
 
 
 @app.get("/email")
-async def email(email: str):
-    return responses.RedirectResponse(f"mailto:{email}", status_code=302)
+async def email(email: str, user_agent: Optional[str] = Header(None)):
+    print("User-Agent", user_agent)
+    if re.findall("Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone", user_agent):
+        return responses.RedirectResponse(f"mailto:{email}", status_code=302)
+    return responses.Response("Please use you phone to write email.")
 
 
 @app.get("/")
