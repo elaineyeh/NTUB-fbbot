@@ -14,6 +14,7 @@ from search_contacts import (
 )
 from init_menu import init_menu
 from activity_crawling import user_identify, show_activity, create_formated_activities
+from subscribed_activity import subscribed_activity
 from config import Settings
 from typing import Optional
 import sqlalchemy
@@ -41,7 +42,8 @@ mapping = {
     'SEND_FEEDBACK': send_feedback,
     'USER_IDENTIFY': user_identify,
     'MORE_ACTIVITY': show_activity,
-    'NEWEST_ACTIVITY': create_formated_activities
+    'NEWEST_ACTIVITY': create_formated_activities,
+    'SUBCRIBE_ACTIVITY': subscribed_activity
 }
 
 
@@ -116,7 +118,7 @@ async def process_postback(messaging, postback):
         for sub_state
         in sub_states
     ]
-
+    print("sub_state_names: ", sub_state_names, payload)
     if payload in sub_state_names:
         # Change user state to input state
         state = db.query(orm.State).filter(
@@ -141,6 +143,7 @@ async def process_postback(messaging, postback):
         sub_states = db.query(orm.State).filter(
             orm.State.parent_id == user.state_id
         ).all()
+        print(sub_states)
         # Find next states
         data = {
             "recipient": {
@@ -159,12 +162,14 @@ async def process_postback(messaging, postback):
                 ]
             }
         }
-        requests.post(
+        print(data)
+        resp = requests.post(
             'https://graph.facebook.com/v10.0/me/messages',
             headers=headers,
             params=params,
             json=data
         )
+        print(resp, resp.content.decode('utf-8'))
     db.close()
 
 

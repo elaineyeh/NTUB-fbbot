@@ -15,6 +15,9 @@ sqlalchemy = "*"
 psycopg2-binary = "*"
 ipython = "*"
 flake8 = "*"
+apscheduler = "*"
+pypinyin = "*"
+fuzzywuzzy = "*"
 
 [requires]
 python_version = "3.8"
