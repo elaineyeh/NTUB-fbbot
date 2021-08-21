@@ -33,25 +33,25 @@ async def activity_crawling():
             item['ApplyEndDate'], "%Y-%m-%dT%H:%M:%S")
         stop_time_stamp = int(time.mktime(stop_struct_time))
         # print(item['ApplyQualificationList'], '學生' in item['ApplyQualificationList'])
-        if '學生' in item['ApplyQualificationList']:
-            # print(nowTime > start_time_stamp, nowTime < stop_time_stamp, nowTime, start_time_stamp, stop_time_stamp)
-            if nowTime > start_time_stamp and nowTime < stop_time_stamp:
-                print(item['IsInApply'] and item['IsOutApply'] is False)
-                if item['IsInApply'] and item['IsOutApply'] is False:
-                    activity.activity_id = item['ActivityID']
-                    activity.activity_name = item['ActivityName']
-                    activity.unit_name = item['UnitName']
-                    activity.apply_qualification_list = item['ApplyQualificationList']
-                    activity.apply_start_date = item['ApplyStartDate']
-                    activity.apply_start_time = item['ApplyStartTime']
-                    activity.apply_end_date = item['ApplyEndDate']
-                    activity.apply_end_time = item['ApplyEndTime']
-                    activity.post_start_time = item['PostStartTime']
-                    activity.post_end_time = item['PostEndTime']
-                    activity.activity_period_list = item['ActivityPeriodList']
+        # print(nowTime > start_time_stamp, nowTime < stop_time_stamp, nowTime, start_time_stamp, stop_time_stamp)
+        if nowTime > start_time_stamp and nowTime < stop_time_stamp:
+            # print(item['IsInApply'] and item['IsOutApply'] is False)
+            if item['IsInApply'] and item['IsOutApply'] is False:
+                activity.activity_id = item['ActivityID']
+                activity.activity_name = item['ActivityName']
+                activity.unit_name = item['UnitName']
+                activity.apply_qualification_list = item['ApplyQualificationList']
+                activity.apply_start_date = item['ApplyStartDate']
+                activity.apply_start_time = item['ApplyStartTime']
+                activity.apply_end_date = item['ApplyEndDate']
+                activity.apply_end_time = item['ApplyEndTime']
+                activity.post_start_time = item['PostStartTime']
+                activity.post_end_time = item['PostEndTime']
+                activity.activity_period_list = item['ActivityPeriodList']
 
-                    db.add(activity)
-                    db.commit()
+                db.add(activity)
+                db.commit()
+    print("start crawling")
 
 
 async def object_as_dict(obj):
