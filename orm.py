@@ -101,6 +101,12 @@ class UserActivity(Base):
     activity = Column(JSONB)
 
 
+class ContactList(Base):
+    __tablename__ = "ub_contactlist"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+
+
 '''
 # Create
 user = User()
