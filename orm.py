@@ -107,6 +107,12 @@ class ContactList(Base):
     name = Column(String)
 
 
+class ContactNameList(Base):
+    __tablename__ = "ub_contactnamelist"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+
+
 '''
 # Create
 user = User()
