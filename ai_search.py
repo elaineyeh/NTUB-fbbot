@@ -3,19 +3,21 @@ import requests
 import pypinyin
 from pypinyin import pinyin
 from fuzzywuzzy import fuzz
+from pymessenger import Bot
+from config import Settings
 
 from subscribed_activity import subscribed_activity
 from quick_replies import quick_replies
 from activity_crawling import create_formated_activities
 from link_result import link_result
+from search_contacts import show_result
 
 
-def fake_function(message):
-    print(message)
-    return message
+PAGE_ACCESS_TOKEN = Settings().PAGE_ACCESS_TOKEN
+bot = Bot(PAGE_ACCESS_TOKEN)
 
 
-def change_pinyin(message):
+async def change_pinyin(message):
     messages = pinyin(message, style=pypinyin.NORMAL)
     result_message = ""
 
