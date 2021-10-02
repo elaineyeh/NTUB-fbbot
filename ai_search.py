@@ -28,29 +28,33 @@ async def change_pinyin(message):
     return result_message
 
 
-def send_response(sender_id, headers, params, datum, **kwargs):
-    data = {
-        "recipient": {
-            "id": sender_id
-        },
-        "message": {
-            "attachment": {
-                "type": "template",
-                "payload": {
-                    "template_type": "generic",
-                    "elements": datum,
-                }
-            }
-        }
-    }
-
-    response = requests.post(
-        'https://graph.facebook.com/v2.6/me/messages',
-        headers=headers,
-        params=params,
-        json=data
-    )
-    print(response.content)
+# async def send_response(sender_id, headers, params, datum, **kwargs):
+#     bot.send_text_message(sender_id, "這是你要找的資料嗎？")
+#
+#     print(datum)
+#
+#     data = {
+#         "recipient": {
+#             "id": sender_id
+#         },
+#         "message": {
+#             "attachment": {
+#                 "type": "template",
+#                 "payload": {
+#                     "template_type": "generic",
+#                     "elements": datum,
+#                 }
+#             }
+#         }
+#     }
+#
+#     response = requests.post(
+#         'https://graph.facebook.com/v2.6/me/messages',
+#         headers=headers,
+#         params=params,
+#         json=data
+#     )
+#     print(response.content)
 
 
 def show_map(message, sender_id, headers, params):
