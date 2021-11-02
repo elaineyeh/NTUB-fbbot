@@ -163,6 +163,7 @@ async def create_formated_activities(sender_id, headers, params, **kwargs):
     db.commit()
 
     await show_activity(sender_id, headers, params)
+    db.close()
 
 
 async def show_activity(sender_id, headers, params, **kwargs):
@@ -225,3 +226,4 @@ async def show_activity(sender_id, headers, params, **kwargs):
         json=data
     )
     print(response.content)
+    db.close()

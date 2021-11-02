@@ -68,6 +68,7 @@ def schedule_user_activity():
                         })
         print(result_activity)
         result_activity.clear()
+        db.close()
 
 
 sched.add_job(schedule_activity, 'cron', day_of_week='mon-sun', hour=7, minute=30)

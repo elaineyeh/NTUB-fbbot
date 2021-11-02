@@ -23,3 +23,4 @@ async def subscribed_activity(sender_id, headers, params, **kwargs):
     db.commit()
 
     bot.send_text_message(sender_id, "訂閱成功！")
+    db.close()

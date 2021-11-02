@@ -139,6 +139,7 @@ async def process_postback(messaging, postback):
             function = mapping.get(state.function)
             await function(sender_id=user.fb_id, headers=headers,
                            params=params, name=payload)
+            db.close()
             return
         sub_states = db.query(orm.State).filter(
             orm.State.parent_id == user.state_id
@@ -232,6 +233,7 @@ async def process_message(messaging, message):
             function = mapping.get(state.function)
             await function(sender_id=user.fb_id, headers=headers,
                            params=params, name=payload, label=label)
+            db.close()
             return
         # Find next states
         await quick_replies(user.fb_id, headers, params, state)

@@ -55,3 +55,4 @@ async def link_result(sender_id=None, name=None, headers=None, params=None, **kw
         json=data
     )
     print(response.content)
+    db.close()
