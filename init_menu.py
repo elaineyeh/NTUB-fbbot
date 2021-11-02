@@ -106,6 +106,7 @@ if __name__ == '__main__':
 
     for user in users:
         psid = user.fb_id
+        print("psid: ", psid)
         requests.delete(
             f'https://graph.facebook.com/v10.0/me/custom_user_settings?psid={psid}&'
             f'params=[%22persistent_menu%22]&access_token={PAGE_ACCESS_TOKEN}')
