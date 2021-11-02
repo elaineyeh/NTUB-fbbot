@@ -57,7 +57,7 @@ async def change_pinyin(message):
 #     print(response.content)
 
 
-def show_map(message, sender_id, headers, params):
+async def show_map(message, sender_id, headers, params, **kwargs):
     letters = ['taibei', 'taoyuan']
     message = change_pinyin(message)
 
@@ -107,7 +107,7 @@ def show_map(message, sender_id, headers, params):
         send_response(sender_id, headers, params, datum)
 
 
-def set_subscribe(message, sender_id, hearders, params):
+async def set_subscribe(message, sender_id, headers, params, **kwargs):
     letters = ['huodong']
     message = change_pinyin(message)
 
@@ -127,11 +127,12 @@ def set_subscribe(message, sender_id, hearders, params):
             quick_replies(sender_id, hearders, params, state)
 
 
-def show_newest_activity(sender_id, hearders, params):
-    create_formated_activities(sender_id, hearders, params)
+
+async def show_newest_activity(message, sender_id, headers, params, **kwargs):
+    await create_formated_activities(sender_id, headers, params)
 
 
-def show_calendar(message, sender_id, hearders, params):
+async def show_calendar(message, sender_id, headers, params, **kwargs):
     annuals = ["103", "104", "105", "106", "107", "108", "109", "110"]
 
     for annual in annuals:
