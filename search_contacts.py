@@ -88,7 +88,7 @@ async def show_result(sender_id, headers, params, result_responses, **kwargs):
 
         datum = {
             "title": result_response['staff']['user']['chineseFullName'],
-            "image_url": "https://i.imgur.com/a6xg5Bo.jpeg",
+            "image_url": "https://i.imgur.com/DjboxZ7.jpeg",
             "buttons": [
                 {
                     "type": "web_url",
@@ -151,7 +151,7 @@ async def show_phone(sender_id, headers, params, **kwargs):
         phone_result = phone[-9:]
         phone_result.append({
             "title": "沒有找到你想要的嗎？",
-            "image_url": "https://i.imgur.com/a6xg5Bo.jpeg",
+            "image_url": "https://i.imgur.com/DjboxZ7.jpeg",
             "buttons": [
                 {
                     "type": "postback",

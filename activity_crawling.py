@@ -145,7 +145,7 @@ async def create_formated_activities(sender_id, headers, params, **kwargs):
 
             activities.append({
                 "title": f"{activity_name}",
-                "image_url": "https://i.imgur.com/W3ILzTa.jpeg",
+                "image_url": "https://i.imgur.com/QAcuOst.jpeg",
                 "subtitle": text,
                 "buttons": [
                     {
