@@ -59,12 +59,14 @@ async def change_pinyin(message):
 
 async def show_map(message, sender_id, headers, params, **kwargs):
     letters = ['taibei', 'taoyuan']
-    message = change_pinyin(message)
+    message = await change_pinyin(message)
+
+    print("Get into show map")
 
     for letter in letters:
         score = fuzz.ratio(letter, message)
 
-        if score >= 50:
+        if score >= 40:
             if letter == 'taibei':
                 datum = {
                     "title": "臺北校區教室配置圖",
