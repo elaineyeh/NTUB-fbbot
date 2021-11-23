@@ -7,7 +7,7 @@ from quick_replies import quick_replies
 
 PAGE_ACCESS_TOKEN = Settings().PAGE_ACCESS_TOKEN
 bot = Bot(PAGE_ACCESS_TOKEN)
-ngrok = "https://91b8-114-25-220-137.ngrok.io"
+ngrok = "https://36fd-27-240-176-17.ngrok.io"
 
 
 async def research_phone(sender_id, headers, params, **kwargs):
