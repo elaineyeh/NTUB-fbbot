@@ -8,7 +8,7 @@ from config import Settings
 
 from subscribed_activity import subscribed_activity
 from quick_replies import quick_replies
-from activity_crawling import create_formated_activities
+from activity_crawling import create_formated_activities, object_as_dict, show_activity
 from link_result import link_result
 from search_contacts import show_result
 
@@ -68,45 +68,91 @@ async def show_map(message, sender_id, headers, params, **kwargs):
 
         if score >= 40:
             if letter == 'taibei':
-                datum = {
-                    "title": "臺北校區教室配置圖",
-                    "image_url": "https://i.imgur.com/vCL7hQk.jpg",
-                    "subtitle": "點此查看臺北校區教室配置圖",
-                    "default_action": {
-                        "type": "web_url",
-                        "url": "https://acad.ntub.edu.tw/var/file/4/1004/attach/83/pta_49070_6919927_50529.pdf",
-                        "messenger_extensions": False,
-                        "webview_height_ratio": "tall",
+                print("Get into taipei map")
+
+                data = {
+                    "recipient": {
+                        "id": sender_id
                     },
-                    "buttons": [
-                        {
-                            "type": "web_url",
-                            "url": "https://acad.ntub.edu.tw/var/file/4/1004/attach/83/pta_49070_6919927_50529.pdf",
-                            "title": "臺北校區教室配置圖"
+                    "message": {
+                        "attachment": {
+                            "type": "template",
+                            "payload": {
+                                "template_type": "generic",
+                                "elements": [
+                                    {
+                                        "title": "台北校區教室配置圖",
+                                        "image_url": "https://i.imgur.com/wGFmlNr.jpeg",
+                                        "subtitle": "點此查看台北校區教室配置圖",
+                                        "default_action": {
+                                            "type": "web_url",
+                                            "url": "shorturl.at/nAN25",
+                                            "messenger_extensions": False,
+                                            "webview_height_ratio": "tall",
+                                        },
+                                        "buttons": [
+                                            {
+                                                "type": "web_url",
+                                                "url": "shorturl.at/nAN25",
+                                                "title": "台北校區教室配置圖"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
                         }
-                    ]
-                }
-            else:
-                datum = {
-                    "title": "桃園校區教室配置圖",
-                    "image_url": "https://i.imgur.com/vCL7hQk.jpg",
-                    "subtitle": "點此查看桃園校區教室配置圖",
-                    "default_action": {
-                        "type": "web_url",
-                        "url": "https://gen.ntub.edu.tw/var/file/9/1009/img/1596/6.2.Buildinglayout.pdf",
-                        "messenger_extensions": False,
-                        "webview_height_ratio": "tall",
-                    },
-                    "buttons": [
-                        {
-                            "type": "web_url",
-                            "url": "https://gen.ntub.edu.tw/var/file/9/1009/img/1596/6.2.Buildinglayout.pdf",
-                            "title": "桃園校區教室配置圖"
-                        }
-                    ]
+                    }
                 }
 
-        send_response(sender_id, headers, params, datum)
+                response = requests.post(
+                    'https://graph.facebook.com/v2.6/me/messages',
+                    headers=headers,
+                    params=params,
+                    json=data
+                )
+                print(response.content)
+            else:
+                data = {
+                    "recipient": {
+                        "id": sender_id
+                    },
+                    "message": {
+                        "attachment": {
+                            "type": "template",
+                            "payload": {
+                                "template_type": "generic",
+                                "elements": [
+                                    {
+                                        "title": "桃園校區教室配置圖",
+                                        "image_url": "https://i.imgur.com/wGFmlNr.jpeg",
+                                        "subtitle": "點此查看桃園校區教室配置圖",
+                                        "default_action": {
+                                            "type": "web_url",
+                                            "url": "shorturl.at/jzCEO",
+                                            "messenger_extensions": False,
+                                            "webview_height_ratio": "tall",
+                                        },
+                                        "buttons": [
+                                            {
+                                                "type": "web_url",
+                                                "url": "shorturl.at/jzCEO",
+                                                "title": "桃園校區教室配置圖"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+
+                response = requests.post(
+                    'https://graph.facebook.com/v2.6/me/messages',
+                    headers=headers,
+                    params=params,
+                    json=data
+                )
+                print(response.content)
 
 
 async def set_subscribe(message, sender_id, headers, params, **kwargs):
