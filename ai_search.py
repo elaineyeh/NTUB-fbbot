@@ -463,6 +463,10 @@ async def detect_action(message, sender_id, headers, params, **kwargs):
         {
             "keys": ["行事曆"],
             "function": show_calendar,
+        },
+        {
+            "keys": ["表單", "表單連結", "連結"],
+            "function": show_form,
         }
     ]
 
