@@ -84,7 +84,7 @@ async def show_result(sender_id, headers, params, result_responses, **kwargs):
         phone = "+88634506333"
 
         if result_response['ext'][0] != '8':
-            phone = "+886233222777"
+            phone = "0233222777"
         phone = phone+","+result_response['ext']
         email = result_response['staff']['user']['email']
 
