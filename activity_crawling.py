@@ -179,7 +179,7 @@ async def show_activity(sender_id, headers, params, **kwargs):
         show_activity = activity[-9:]
         show_activity.append({
             "title": "沒有找到你想要的嗎？",
-            "image_url": "https://i.imgur.com/W3ILzTa.jpeg",
+            "image_url": "https://i.imgur.com/QAcuOst.jpeg",
             "buttons": [
                 {
                     "type": "postback",
