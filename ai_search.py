@@ -181,7 +181,85 @@ async def set_subscribe(message, sender_id, headers, params, **kwargs):
 
 
 async def show_newest_activity(message, sender_id, headers, params, **kwargs):
-    await create_formated_activities(sender_id, headers, params)
+    if message:
+        print("Get into ai search message")
+        db = orm.SessionLocal()
+        result_activities = []
+        items = db.query(orm.Activity).all()
+        search_activity = await change_pinyin(message)
+        for item in items:
+            if message in item.activity_name:
+                activity = await object_as_dict(item)
+                activity_id = activity['activity_id']
+                activity_name = activity['activity_name']
+                start_date = activity['post_start_time'].date()
+                start_time = activity['activity_period_list'][0]['ActivityStartTime']
+                start_time = start_time.split('T')[1]
+                start_time = start_time[:5]
+                end_date = activity['post_end_time'].date()
+                end_time = activity['activity_period_list'][0]['ActivityEndTime']
+                end_time = end_time.split('T')[1]
+                end_time = end_time[:5]
+                location = activity['activity_period_list'][0]['Location']
+
+                text = f"{start_date} {start_time}-{end_date} {end_time}\n活動地點：{location}"
+                url = f"https://signupactivity.ntub.edu.tw/activity/activityDetail/{activity_id}"
+                result_activities.append({
+                    "title": f"{activity_name}",
+                    "image_url": "https://i.imgur.com/QAcuOst.jpeg",
+                    "subtitle": text,
+                    "buttons": [
+                        {
+                            "type": "web_url",
+                            "title": "我要報名",
+                            "url": url
+                        }
+                    ]
+                })
+        if not result_activities:
+            for item in items:
+                pinyin_activity = await change_pinyin(item.activity_name)
+                score = fuzz.ratio(pinyin_activity, search_activity)
+                print(item.activity_name, score)
+                if score > 20:
+                    activity = await object_as_dict(item)
+                    activity_id = activity['activity_id']
+                    activity_name = activity['activity_name']
+                    start_date = activity['post_start_time'].date()
+                    start_time = activity['activity_period_list'][0]['ActivityStartTime']
+                    start_time = start_time.split('T')[1]
+                    start_time = start_time[:5]
+                    end_date = activity['post_end_time'].date()
+                    end_time = activity['activity_period_list'][0]['ActivityEndTime']
+                    end_time = end_time.split('T')[1]
+                    end_time = end_time[:5]
+                    location = activity['activity_period_list'][0]['Location']
+
+                    text = f"{start_date} {start_time}-{end_date} {end_time}\n活動地點：{location}"
+                    url = f"https://signupactivity.ntub.edu.tw/activity/activityDetail/{activity_id}"
+                    result_activities.append({
+                        "title": f"{activity_name}",
+                        "image_url": "https://i.imgur.com/QAcuOst.jpeg",
+                        "subtitle": text,
+                        "buttons": [
+                            {
+                                "type": "web_url",
+                                "title": "我要報名",
+                                "url": url
+                            }
+                        ]
+                    })
+        print(result_activities)
+
+        user_activity = orm.UserActivity()
+        user_activity.fb_id = sender_id
+        user_activity.activity = result_activities
+        db.add(user_activity)
+        db.commit()
+        db.close()
+        await show_activity(sender_id, headers, params, **kwargs)
+    else:
+        await create_formated_activities(sender_id, headers, params)
 
 
 async def show_calendar(message, sender_id, headers, params, **kwargs):
