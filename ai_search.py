@@ -157,17 +157,19 @@ async def show_map(message, sender_id, headers, params, **kwargs):
 
 async def set_subscribe(message, sender_id, headers, params, **kwargs):
     letters = ['huodong']
-    message = change_pinyin(message)
+    message = await change_pinyin(message)
 
     for letter in letters:
         score = fuzz.ratio(letter, message)
 
         if score >= 50:
-            subscribed_activity(sender_id, hearders, params)
+            await subscribed_activity(sender_id, headers, params)
         else:
             db = orm.SessionLocal()
-            user = db.query(orm.User).filter(orm.User.fb_id == sender_id).one_or_none()
-            state = db.query(orm.State).filter(orm.State.name == 'QUICK_REPLY').one_or_none()
+            user = db.query(orm.User).filter(
+                orm.User.fb_id == sender_id).one_or_none()
+            state = db.query(orm.State).filter(
+                orm.State.name == 'QUICK_REPLY').one_or_none()
             user.state_id = state.id
             db.add(user)
             db.commit()
