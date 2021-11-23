@@ -438,11 +438,11 @@ async def detect_action(message, sender_id, headers, params, **kwargs):
     action_list = [
         {
             "keys": ["打電話", "打給", "撥打", "撥給", "電話", "號碼"],
-            "function": fake_function,
+            "function": show_contact,
         },
         {
             "keys": ["email", "寫信", "信箱", "郵件", "寄信", "郵箱"],
-            "function": fake_function,
+            "function": show_contact,
         },
         {
             "keys": ["地圖", "校園地圖", "在哪裡", "怎麼去", "教室"],
@@ -450,10 +450,10 @@ async def detect_action(message, sender_id, headers, params, **kwargs):
         },
         {
             "keys": ["學分", "課程科目表", "課程", "課表"],
-            "function": fake_function,
+            "function": search_subject,
         },
         {
-            "keys": ["訂閱"],
+            "keys": ["訂閱", "訂閱活動"],
             "function": set_subscribe,
         },
         {
