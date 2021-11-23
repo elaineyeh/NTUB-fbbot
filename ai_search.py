@@ -268,12 +268,12 @@ async def show_calendar(message, sender_id, headers, params, **kwargs):
     for annual in annuals:
         if annual in message:
             name = "CALENDAR_" + annual
-            link_result(sender_id, name, hearders, params)
+            await link_result(sender_id, name, headers, params)
             return
 
     name = "CALENDAR_110"
-    link_result(sender_id, name, hearders, params)
 
+    await link_result(sender_id, name, headers, params)
 
 def detect_action(message, sender_id, headers, params, **kwargs):
     # 1. 判斷功能
