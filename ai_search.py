@@ -174,8 +174,10 @@ async def set_subscribe(message, sender_id, headers, params, **kwargs):
             db.add(user)
             db.commit()
 
-            quick_replies(sender_id, hearders, params, state)
+            bot.send_text_message(sender_id, "找不到相關資訊，可以使用下方快速搜尋你想要的資料喔～")
 
+            await quick_replies(sender_id, headers, params, state)
+            db.close()
 
 
 async def show_newest_activity(message, sender_id, headers, params, **kwargs):
