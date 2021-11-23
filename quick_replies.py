@@ -28,6 +28,7 @@ async def quick_replies(sender_id, headers, params, state, **kwargs):
                 ]
             }
         }
+        db.close()
         requests.post(
             'https://graph.facebook.com/v10.0/me/messages',
             headers=headers,
