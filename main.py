@@ -15,12 +15,14 @@ from search_contacts import (
 from init_menu import init_menu
 from activity_crawling import user_identify, show_activity, create_formated_activities
 from subscribed_activity import subscribed_activity
+from ai_search import detect_action
 from config import Settings
 from typing import Optional
 import sqlalchemy
 import requests
 import orm
 import re
+
 
 app = FastAPI()
 
@@ -102,6 +104,7 @@ async def process_postback(messaging, postback):
         user = db_user
 
     payload = postback['payload']
+    print("process_postback's payload is :", payload)
     if payload == 'QUICK_REPLY':
         user.state_id = sqlalchemy.sql.null()
         db.add(user)
@@ -110,9 +113,15 @@ async def process_postback(messaging, postback):
     sub_states = db.query(orm.State).filter(
         orm.State.parent_id == user.state_id
     ).all()
-
+    print("process postback's sub_state is :", sub_states)
     if not sub_states:
-        pass
+        state_function = db.query(orm.State).filter(orm.State.name == payload).one_or_none()
+        if state_function:
+            print("process_postback's function is: ", state_function.function)
+            function = mapping.get(state_function.function)
+            await function(sender_id=user.fb_id, headers=headers, params=params)
+            db.close()
+            return
     sub_state_names = [
         sub_state.name
         for sub_state
@@ -197,7 +206,10 @@ async def process_message(messaging, message):
         orm.State.parent_id == user.state_id
     ).all()
     if not sub_states:
-        pass
+        print(message)
+        if 'text' in message:
+            payload = message['text']
+
     sub_state_names = [
         sub_state.name
         for sub_state
@@ -248,6 +260,13 @@ async def process_message(messaging, message):
             user.state_id = sqlalchemy.sql.null()
         db.add(user)
         db.commit()
+        db.close()
+        return
+    else:
+        message = payload
+        print("call main.py--------------------")
+        print("message", message)
+        await detect_action(message, sender_id=user.fb_id, headers=headers, params=params)
         return
 
     db.close()
