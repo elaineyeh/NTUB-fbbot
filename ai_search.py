@@ -275,7 +275,163 @@ async def show_calendar(message, sender_id, headers, params, **kwargs):
 
     await link_result(sender_id, name, headers, params)
 
-def detect_action(message, sender_id, headers, params, **kwargs):
+
+async def show_contact(message, sender_id, headers, params, flag=None, **kwargs):
+    db = orm.SessionLocal()
+    contactlist = db.query(orm.ContactList).all()
+
+    print("called show_contect")
+
+    for item in contactlist:
+        message = await change_pinyin(message)
+        key = await change_pinyin(item.name)
+        if key in message:
+            name = item.name
+            print("use contactlist------------")
+            print("name = ", name)
+            await search_contact(sender_id, headers, params, name)
+            db.close()
+            return
+
+    contactnamelist = db.query(orm.ContactNameList).order_by(
+        orm.ContactNameList.id.desc()).all()
+    for item in contactnamelist:
+        if item.name in message:
+            name = item.name
+            print("use contactnamelist------------")
+            await search_contact(sender_id, headers, params, name)
+            db.close()
+            return
+
+    if flag:
+        return True
+
+    await show_result(sender_id, headers, params, result_responses=None)
+
+
+async def search_contact(sender_id, headers, params, name):
+    result_responses = requests.get(
+        'https://api-auth.ntub.edu.tw/api/contacts/?search={name}'.format(name=name))
+
+    await show_result(sender_id, headers, params, result_responses)
+
+
+async def search_subject(message, sender_id, headers, params, **kwargs):
+    years = ['100', '101', '102', '103', '104',
+             '105', '106', '107', '108', '109']
+    systems = {'wuzhuan': 'FIVE', 'erji': 'TWO', 'siji': 'FOUR',
+               'shuoshi': 'MASTER_DEGREE', 'boshi': 'PHD'}
+    results = {}
+    max_val = 0
+    max_score_name = ""
+
+    pinyin_message = await change_pinyin(message)
+
+    for year in years:
+        if year in pinyin_message:
+            search_year = year
+            message = message.replace(year, "")
+            for system in systems:
+                if system in pinyin_message:
+                    search_system = systems.get(system)
+                    message = await change_pinyin(message)
+                    db = orm.SessionLocal()
+                    links = db.query(orm.Link).all()
+
+                    for link in links:
+                        if search_year in link.name and search_system in link.name:
+                            title = link.title
+                            title = title[8:]
+                            title = await change_pinyin(title)
+                            results[title] = link.name
+
+                    for item in results:
+                        score = fuzz.ratio(item, message)
+                        print(item, results[item], score)
+                        if score > max_val:
+                            max_val = score
+                            max_score_name = results[item]
+
+                    if max_score_name:
+                        print(max_score_name)
+                        name = max_score_name
+
+                        await link_result(sender_id, name, headers, params)
+                        db.close()
+                        return
+
+            state_name = search_year + "_class"
+            state = db.query(orm.State).filter(
+                orm.State.name == state_name).one_or_none()
+            user = db.query(orm.User).filter(
+                orm.User.fb_id == sender_id).one_or_none()
+            user.state_id = state.id
+            db.add(user)
+            db.commit()
+
+            await quick_replies(sender_id, headers, params, state)
+            db.close()
+
+    db = orm.SessionLocal()
+    user = db.query(orm.User).filter(orm.User.fb_id == sender_id).one_or_none()
+    state = db.query(orm.State).filter(
+        orm.State.name == 'QUICK_REPLY').one_or_none()
+    user.state_id = state.id
+    db.add(user)
+    db.commit()
+
+    bot.send_text_message(sender_id, "找不到相關資訊，可以使用下方快速搜尋你想要的資料喔～")
+
+    await quick_replies(sender_id, headers, params, state)
+    db.close()
+
+
+async def show_form(message, sender_id, headers, params, **kwargs):
+    db = orm.SessionLocal()
+    links = db.query(orm.Link).all()
+    results = {}
+    max_val = 0
+    max_score_name = ""
+
+    message = await change_pinyin(message)
+
+    for link in links:
+        if "課程科目表" not in link.button_label and "配置圖" not in link.button_label and "行事曆" not in link.button_label:
+            print(link.button_label)
+            pinyin_link_button_label = await change_pinyin(link.button_label)
+            score = fuzz.ratio(pinyin_link_button_label, message)
+            print(link.name, " ", score)
+            results[link.name] = score
+
+    for item in results:
+        if results[item] > max_val:
+            max_val = results[item]
+            max_score_name = item
+
+    print("max_score_name", max_score_name)
+
+    if max_score_name:
+        name = max_score_name
+        print("The max_score_name is ", name)
+
+        await link_result(sender_id, name, headers, params)
+        db.close()
+        return
+
+    user = db.query(orm.User).filter(orm.User.fb_id == sender_id).one_or_none()
+    state = db.query(orm.State).filter(
+        orm.State.name == 'QUICK_REPLY').one_or_none()
+    user.state_id = state.id
+    db.add(user)
+    db.commit()
+
+    bot.send_text_message(sender_id, "找不到相關資訊，可以使用下方快速搜尋你想要的資料喔～")
+
+    await quick_replies(sender_id, headers, params, state)
+    db.close()
+
+
+async def detect_action(message, sender_id, headers, params, **kwargs):
     # 1. 判斷功能
     # 2. 拿掉功能關鍵字
     # 3. 跑對應的 funcion
