@@ -20,6 +20,7 @@ async def research_phone(sender_id, headers, params, **kwargs):
     print(user.fb_id, state.name, '----------- is me research phone')
 
     await quick_replies(sender_id, headers, params, state)
+    db.close()
 
 
 async def none_search(sender_id, headers, params, **kwargs):
@@ -60,6 +61,7 @@ async def finish_phone(sender_id, headers, params, **kwargs):
     user.state_id = state.id
     db.add(user)
     db.commit()
+    db.close()
 
     await quick_replies(sender_id, headers, params, state)
 
@@ -110,6 +112,7 @@ async def show_result(sender_id, headers, params, result_responses, **kwargs):
     contact.contact = phone_list
     db.add(contact)
     db.commit()
+    db.close()
 
     await show_phone(sender_id, headers, params)
 
@@ -190,6 +193,8 @@ async def show_phone(sender_id, headers, params, **kwargs):
         }
     }
 
+    db.close()
+
     requests.post(
         'https://graph.facebook.com/v2.6/me/messages',
         headers=headers,
@@ -211,3 +216,4 @@ async def search_name_text(sender_id, **kwargs):
     user.state_id = state.id
     db.add(user)
     db.commit()
+    db.close()
