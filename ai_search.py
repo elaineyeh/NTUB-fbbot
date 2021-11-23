@@ -470,8 +470,27 @@ async def detect_action(message, sender_id, headers, params, **kwargs):
         }
     ]
 
-    for action in action_list:
-        for key in action["keys"]:
-            if key in message:
-                message = message.replace(key, "")
-                action["function"](message, sender_id, headers, params)
+    if message is not None:
+        for action in action_list:
+            for key in action["keys"]:
+                if key in message:
+                    message = message.replace(key, "")
+                    print("message ", message)
+                    print("function ", action["function"])
+                    await action["function"](message, sender_id, headers, params)
+                    return
+
+        print("call show_contact with teacher name")
+        none_contact = await show_contact(message, sender_id, headers, params, flag=True)
+        if none_contact:
+            bot.send_text_message(sender_id, "找不到相關資訊，可以使用下方快速搜尋你想要的資料喔～")
+
+        db = orm.SessionLocal()
+        user = db.query(orm.User).filter(orm.User.fb_id == sender_id).one_or_none()
+        state = db.query(orm.State).filter(orm.State.name == 'QUICK_REPLY').one_or_none()
+        user.state_id = state.id
+        db.add(user)
+        db.commit()
+
+        await quick_replies(sender_id, headers, params, state)
+        db.close()
